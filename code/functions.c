@@ -55,12 +55,4 @@ void MIPStoHex(char *ins, char hex[SIZE]) {
 
         index += length;
     }
-
-    printf("index : %d %d %d %d\n", indexes[0], indexes[1], indexes[2], indexes[3]);
-    printf("taille : %d %d %d %d\n", lengths[0], lengths[1], lengths[2], lengths[3]);
-
-    afficherN(ins + indexes[0], lengths[0]);
-    afficherN(ins + indexes[1], lengths[1]);
-    afficherN(ins + indexes[2], lengths[2]);
-    afficherN(ins + indexes[3], lengths[3]);
 }
