@@ -7,12 +7,6 @@
 #define MAXLEN 50
 
 int main(int argc, char *argv[]) {
-<<<<<<< HEAD
-    char hex[SIZE];
-    char ins[] = "ROTR $9,$9,29";
-
-    MIPStoHex(ins, hex);
-=======
 	char *sourceName, *resultName;
 	FILE *sourceFile, *resultFile;
 	char c, *sourceLine = malloc(MAXLEN*sizeof(char)), resultLine[SIZE];
@@ -54,7 +48,6 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
->>>>>>> origin/master
 
     return 1;
 }

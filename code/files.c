@@ -1,7 +1,5 @@
 #include <stdio.h>
-<<<<<<< HEAD
 #include "files.h"
-=======
 #include <stdlib.h>
 
 /*Fonction qui ouvre un fichier ou quitte avec un message d'erreur si il y a un problème*/
@@ -25,4 +23,3 @@ void fermeOuQuitte(const char *nom, FILE * fd){
 		exit(EXIT_FAILURE);
 	}
 }
->>>>>>> origin/master
