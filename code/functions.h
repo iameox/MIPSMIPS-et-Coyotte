@@ -1,5 +1,3 @@
-#define SIZE 32
+#define SIZE 8
 
-typedef struct instruction {
-    char *name, *param1, *param2, *param3;
-} instruction;
+void MIPStoHex(char *ins, char hex[SIZE]);
