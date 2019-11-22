@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "files.h"
+#define SIZE 8
 
 /* Retourne l'index du premier mot-clé trouvé */
 int wordIndex(char *ins) {
