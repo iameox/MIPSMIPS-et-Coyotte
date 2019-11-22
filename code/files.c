@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 /*Fonction qui ouvre un fichier ou quitte avec un message d'erreur si il y a un problème*/
 FILE * ouvreOuQuitte(const char *nom, const char *mode){
