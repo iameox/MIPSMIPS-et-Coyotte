@@ -109,7 +109,9 @@ void tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) 
         result = papattesdechatTypeI(opcode, arg1, 0, arg2);
     }
 
-    sprintf(hex, "%x", result);
+    printf("%.8x\n", result);
+    sprintf(hex, "%.8x", result);
+    printf("%s\n", hex);
 }
 
 void MIPStoHex(char *ins, char hex[SIZE]) {
@@ -129,6 +131,8 @@ void MIPStoHex(char *ins, char hex[SIZE]) {
 
         index += length;
     }
+
+    tafonctionpetee(ins, indexes, lengths, hex);
 
 
     /*printf("index : %d %d %d %d\n", indexes[0], indexes[1], indexes[2], indexes[3]);

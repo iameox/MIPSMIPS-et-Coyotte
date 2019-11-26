@@ -43,8 +43,11 @@ int main(int argc, char *argv[]) {
 				MIPStoHex(sourceLine, resultLine);
 
 				for(i = 0 ; i < SIZE ; i++) {
-					fprintf(resultFile,"%c",resultLine[i]);
+                    if (i % 4 == 0 && i != 0) fputc(' ', resultFile);
+					fputc(resultLine[i], resultFile);
 				}
+
+                fputc('\n', resultFile);
 			}
 		}
 	}
