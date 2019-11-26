@@ -79,26 +79,37 @@ int papattesdechatSysCall(int code) {
 
 void tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
     char *instruction = ins + indexes[0];
-    /*int rs = atoi(ins + indexes[1]);
-    int rt = atoi(ins + indexes[2]);
-    int rd = atoi(ins + indexes[3]);*/
+    int arg1 = atoi(ins + indexes[1]);
+    int arg2 = atoi(ins + indexes[2]);
+    int arg3 = atoi(ins + indexes[3]);
+
+    int opcode = 0;
+    int sa = 0;
+    int function = 0;
+    int result;
 
     if (!strncmp(instruction, "ADD", lengths[0])) {
-        /* Pas ouf*/
-        /*tafonctionpetee(ins, indexes, lengths, hex);*/
-        
-        /* Marche mieux */
-        int opcode = 0b001000;
-        int rs = 8;
-        int rt = 8;
-        /*int rd = 1;
-        int sa = 0;
-        int function = 0x20;*/
-        int immediate = 1;
-        int x = papattesdechatTypeI(opcode, rs, rt, immediate);
+        function = 0x20;
+        result = papattesdechatTypeR(opcode, arg2, arg3, arg1, sa, function);
 
-        printf("%x\n", x);
+    } else if (!strncmp(instruction, "ADDI", lengths[0])) {
+        opcode = 0x8;
+        result = papattesdechatTypeI(opcode, arg2, arg1, arg3);
+
+    } else if (!strncmp(instruction, "AND", lengths[0])) {
+        function = 0x24;
+        result = papattesdechatTypeR(opcode, arg2, arg3, arg1, sa, function);
+
+    } else if (!strncmp(instruction, "BEQ", lengths[0])) {
+        opcode = 0x4;
+        result = papattesdechatTypeI(opcode, arg1, arg2, arg3);
+    
+    } else if (!strncmp(instruction, "BGTZ", lengths[0])) {
+        opcode = 0x7;
+        result = papattesdechatTypeI(opcode, arg1, 0, arg2);
     }
+
+    sprintf(hex, "%x", result);
 }
 
 void MIPStoHex(char *ins, char hex[SIZE]) {
