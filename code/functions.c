@@ -13,7 +13,6 @@ void afficherN(char *c, int n) {
     printf("\n");
 }
 
-    return ((x & mask(4 - ny)) << ny) + (y >> (sy - ny));
 /* Retourne l'index du premier mot-clé trouvé */
 int wordIndex(char *ins) {
     int i = 0;
