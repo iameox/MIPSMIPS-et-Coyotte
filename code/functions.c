@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "functions.h"
 #include "files.h"
-#include <string.h>
+#include "instructions.h"
 
 void afficherN(char *c, int n) {
     int i;
@@ -83,10 +85,24 @@ void tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) 
     int arg2 = atoi(ins + indexes[2]);
     int arg3 = atoi(ins + indexes[3]);
 
-    int opcode = 0;
+    char *instructions[] =  {"ADD"};
+    int (*functions[])(int, int, int) = {&add};
+    int i = 0, n = 1, stop = 0;
+    int result;
+
+    while (i < n && !stop) {
+        if (!strncmp(instruction, instructions[i], lengths[0])) {
+            stop = 1;
+
+            result = (functions[i])(arg1, arg2, arg3);
+        }
+
+        i++;
+    }
+
+    /*int opcode = 0;
     int sa = 0;
     int function = 0;
-    int result;
 
     if (!strncmp(instruction, "ADD", lengths[0])) {
         function = 0x20;
@@ -107,7 +123,7 @@ void tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) 
     } else if (!strncmp(instruction, "BGTZ", lengths[0])) {
         opcode = 0x7;
         result = papattesdechatTypeI(opcode, arg1, 0, arg2);
-    }
+    }*/
 
     printf("%.8x\n", result);
     sprintf(hex, "%.8x", result);
