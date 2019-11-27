@@ -72,25 +72,18 @@ int papattesdechatTypeJ(int opcode, int target) {
     return papattesdechat(args, size, 2);
 }
 
-int papattesdechatSysCall(int code) {
-    int args[] = {0, code, 0xC};
-    int size[] = {6, 20, 6};
-
-    return papattesdechat(args, size, 3);
-}
-
 void tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
     char *instruction = ins + indexes[0];
     int arg1 = atoi(ins + indexes[1]);
     int arg2 = atoi(ins + indexes[2]);
     int arg3 = atoi(ins + indexes[3]);
 
-    char *instructions[] =  {"ADD"};
-    int (*functions[])(int, int, int) = {&add};
-    int i = 0, n = 1, stop = 0;
+    char *instructions[] = INS_NAMES;
+    int (*functions[])(int, int, int) = INS_POINTERS;
+    int i = 0, stop = 0;
     int result;
 
-    while (i < n && !stop) {
+    while (i < INS_NUMBER && !stop) {
         if (!strncmp(instruction, instructions[i], lengths[0])) {
             stop = 1;
 
@@ -100,34 +93,7 @@ void tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) 
         i++;
     }
 
-    /*int opcode = 0;
-    int sa = 0;
-    int function = 0;
-
-    if (!strncmp(instruction, "ADD", lengths[0])) {
-        function = 0x20;
-        result = papattesdechatTypeR(opcode, arg2, arg3, arg1, sa, function);
-
-    } else if (!strncmp(instruction, "ADDI", lengths[0])) {
-        opcode = 0x8;
-        result = papattesdechatTypeI(opcode, arg2, arg1, arg3);
-
-    } else if (!strncmp(instruction, "AND", lengths[0])) {
-        function = 0x24;
-        result = papattesdechatTypeR(opcode, arg2, arg3, arg1, sa, function);
-
-    } else if (!strncmp(instruction, "BEQ", lengths[0])) {
-        opcode = 0x4;
-        result = papattesdechatTypeI(opcode, arg1, arg2, arg3);
-    
-    } else if (!strncmp(instruction, "BGTZ", lengths[0])) {
-        opcode = 0x7;
-        result = papattesdechatTypeI(opcode, arg1, 0, arg2);
-    }*/
-
-    printf("%.8x\n", result);
     sprintf(hex, "%.8x", result);
-    printf("%s\n", hex);
 }
 
 void MIPStoHex(char *ins, char hex[SIZE]) {
