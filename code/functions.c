@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include "functions.h"
 #include "files.h"
@@ -39,6 +40,94 @@ int wordLength(char *ins) {
     }
 
     return i;
+}
+
+int power(int a, int b) {
+    int i, result = 1;
+    for(i = 0 ; i < b ; i++) result *= a;
+    return result;
+}
+
+int amoi(char *str, int size) {
+    int i, digit, value = 0;
+    for(i = 0 ; i < size ; i++) {
+        switch(str[i]) {
+            case 'a': digit = 10;
+            break;
+            case 'b': digit = 11;
+            break;
+            case 'c': digit = 12;
+            break;
+            case 'd': digit = 13;
+            break;
+            case 'e': digit = 14;
+            break;
+            case 'f': digit = 15;
+            break;
+            default: digit = str[i] - 48; /*Wola faut trouver un équivalent de atoi mais pour des char*/
+            break;
+        }
+        /*printf("le digit : %d\n", digit);
+        printf("la puissance de 16 : %d\n", size-i-1);
+        printf("ce que je trouve pour la puissance de 16: %d\n", power(16,size - i-1));*/
+        value += digit*power(16,size - i-1);
+    }
+    return value;
+}
+
+/* Determine la valeur correspondante du charactère, ainsi que les registres spéciaux (sp, fp, ra) et gère la notation hexdécimale*/
+int anous(char * registerStr, int size) {
+    int registerValue = 0;
+
+    if (size > 2 && registerStr[0] == '0' && registerStr[1] == 'x') { /* écriture hexa*/
+        registerValue = amoi(registerStr+2, size -2);
+        printf("esskilrentrlaomoin\n");
+    } else {
+        if(isalpha(registerStr[0])) { /*registres spéciaux*/
+            if(!strncmp(registerStr, "zero", size)) {
+                registerValue = 0;
+            }
+            if(!strncmp(registerStr, "at", size)) {
+                registerValue = 1;
+            }
+            if(registerStr[0] == 'v' && isdigit(registerStr[1])) {
+                registerValue = 2 + atoi(registerStr + 1);
+            }
+            if(registerStr[0] == 'a' && isdigit(registerStr[1])) {
+                registerValue = 4 + atoi(registerStr + 1);
+            }
+            if(registerStr[0] == 't' && isdigit(registerStr[1])) {
+                if(atoi(registerStr + 1) < 8) {
+                    registerValue = 8 + atoi(registerStr + 1);
+                } 
+                else {
+                    registerValue = 16 + atoi(registerStr + 1);
+                } 
+            }
+            if(registerStr[0] == 's' && isdigit(registerStr[1])) {
+                registerValue = 16 + atoi(registerStr + 1);
+            }
+            if(registerStr[0] == 'k' && isdigit(registerStr[1])) {
+                registerValue = 26 + atoi(registerStr +1);
+            }
+            if(!strncmp(registerStr, "gp", size)) {
+                registerValue = 28;
+            }
+            if(!strncmp(registerStr, "sp", size)) {
+                registerValue = 29;
+            }
+            if(!strncmp(registerStr, "fp", size)) {
+                registerValue = 30;
+            }
+            if(!strncmp(registerStr, "ra", size)) {
+                registerValue = 31;
+            }
+        } else { /*Cas classique*/
+            registerValue = atoi(registerStr);
+        }
+    }
+
+    return registerValue;
 }
 
 int papattesdechat(int * args, int * size, int n) {
@@ -125,3 +214,18 @@ void MIPStoHex(char *ins, char hex[SIZE]) {
     afficherN(ins + indexes[2], lengths[2]);
     afficherN(ins + indexes[3], lengths[3]);*/
 }
+
+/*
+int main() {
+    printf("hexa1 : %d\n", anous("0x18", 4) );
+    printf("hexa2 : %d\n", anous("0xa5b", 5) );
+    printf("hexa3 : %d\n", anous("0x1da2", 6) );
+    printf("zero : %d\n", anous("zero", 4) );
+    printf("at : %d\n", anous("at", 2) );
+    printf("v1 : %d\n", anous("v1", 2) );
+    printf("t0 : %d\n", anous("t0", 2) );
+    printf("t7 : %d\n", anous("t7", 2) );
+    printf("t8 : %d\n", anous("t8", 2) );
+    printf("gp : %d\n", anous("gp", 2) );
+    return 1;
+}*/
