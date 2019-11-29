@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 	char *sourceName, *resultName;
 	FILE *sourceFile, *resultFile;
 	char c, *sourceLine = malloc(MAXLEN*sizeof(char)), resultLine[SIZE];
-	int i;
+	int i, write;
 
 
 	if(argc <= 1) {
@@ -29,28 +29,33 @@ int main(int argc, char *argv[]) {
 
 		while(!feof(sourceFile)) {
 			i = 0;
+			c = fgetc(sourceFile);
 			
-			do {
-				c = fgetc(sourceFile);
+			while (c != '\n' && !feof(sourceFile)) {
 				sourceLine[i] = c;
+
+				c = fgetc(sourceFile);
 				i++;
-			} while(c != '\n' && !feof(sourceFile));
-			sourceLine[i-1] = 0; /*On écrase le newline par une sentinelle pour créer la ligne*/
+			}
 
-			printf("**%s**\n", sourceLine);
+			//printf("**%s**\n", sourceLine);
 
-			if(strlen(sourceLine) > 0) {
-				MIPStoHex(sourceLine, resultLine);
+			if(i > 0) {
+				write = MIPStoHex(sourceLine, resultLine);
 
-				for(i = 0 ; i < SIZE ; i++) {
-                    if (i % 4 == 0 && i != 0) fputc(' ', resultFile);
-					fputc(resultLine[i], resultFile);
+				if (write) {
+					for(i = 0 ; i < SIZE ; i++) {
+                    	if (i % 4 == 0 && i != 0) fputc(' ', resultFile);
+						fputc(resultLine[i], resultFile);
+					}
 				}
 
                 fputc('\n', resultFile);
 			}
 		}
 	}
+
+	free(sourceLine);
 
     return 1;
 }
