@@ -24,8 +24,8 @@ int main(int argc, char *argv[]) {
 		}
 		
 		sourceName = argv[1];
-		sourceFile = ouvreOuQuitte(sourceName, "rb");
-		resultFile = ouvreOuQuitte(resultName, "wb");
+		sourceFile = openFile(sourceName, "rb");
+		resultFile = openFile(resultName, "wb");
 
 		while(!feof(sourceFile)) {
 			i = 0;
@@ -51,6 +51,10 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
+
+	free(sourceLine);
+	closeFile(sourceName, sourceFile);
+	closeFile(resultName, resultFile);
 
     return 1;
 }
