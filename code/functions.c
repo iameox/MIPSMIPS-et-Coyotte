@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include "functions.h"
 #include "files.h"
@@ -51,6 +52,96 @@ int wordLength(char *ins, char *delimiters) {
     }
 
     return stop ? i - 1 : i;
+}
+
+int power(int a, int b) {
+    int i, result = 1;
+    for(i = 0 ; i < b ; i++) result *= a;
+    return result;
+}
+
+int amoi(char *str, int size) {
+    int i, digit, value = 0;
+    for(i = 0 ; i < size ; i++) {
+        switch(str[i]) {
+            case 'a': digit = 10;
+            break;
+            case 'b': digit = 11;
+            break;
+            case 'c': digit = 12;
+            break;
+            case 'd': digit = 13;
+            break;
+            case 'e': digit = 14;
+            break;
+            case 'f': digit = 15;
+            break;
+            default: digit = str[i] - 48; /*Wola faut trouver un équivalent de atoi mais pour des char*/
+            break;
+        }
+        /*printf("le digit : %d\n", digit);
+        printf("la puissance de 16 : %d\n", size-i-1);
+        printf("ce que je trouve pour la puissance de 16: %d\n", power(16,size - i-1));*/
+        value += digit*power(16,size - i-1);
+    }
+    return value;
+}
+
+/* Determine la valeur correspondante du charactère, ainsi que les registres spéciaux (sp, fp, ra) et gère la notation hexdécimale*/
+int anous(char * argStr, int size) {
+    int operandValue = 0;
+    char * registerStr = argStr+1;
+
+    if (size > 2 && registerStr[0] == '0' && registerStr[1] == 'x') { /* écriture hexa*/
+        operandValue = amoi(registerStr+2, size -2);
+    } else if( argStr[0] == '$' ) {
+        if(isalpha(registerStr[0])) { /*registres spéciaux*/
+            if(!strncmp(registerStr, "zero", size)) {
+                operandValue = 0;
+            }
+            if(!strncmp(registerStr, "at", size)) {
+                operandValue = 1;
+            }
+            if(registerStr[0] == 'v' && isdigit(registerStr[1])) {
+                operandValue = 2 + atoi(registerStr + 1);
+            }
+            if(registerStr[0] == 'a' && isdigit(registerStr[1])) {
+                operandValue = 4 + atoi(registerStr + 1);
+            }
+            if(registerStr[0] == 't' && isdigit(registerStr[1])) {
+                if(atoi(registerStr + 1) < 8) {
+                    operandValue = 8 + atoi(registerStr + 1);
+                } 
+                else {
+                    operandValue = 16 + atoi(registerStr + 1);
+                } 
+            }
+            if(registerStr[0] == 's' && isdigit(registerStr[1])) {
+                operandValue = 16 + atoi(registerStr + 1);
+            }
+            if(registerStr[0] == 'k' && isdigit(registerStr[1])) {
+                operandValue = 26 + atoi(registerStr +1);
+            }
+            if(!strncmp(registerStr, "gp", size)) {
+                operandValue = 28;
+            }
+            if(!strncmp(registerStr, "sp", size)) {
+                operandValue = 29;
+            }
+            if(!strncmp(registerStr, "fp", size)) {
+                operandValue = 30;
+            }
+            if(!strncmp(registerStr, "ra", size)) {
+                operandValue = 31;
+            }
+        } else { /*Cas classique*/
+            operandValue = atoi(registerStr);
+        }
+    } else {
+        operandValue = atoi(argStr);
+    }
+
+    return operandValue;
 }
 
 int papattesdechat(int * args, int * size, int n) {
