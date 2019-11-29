@@ -76,58 +76,60 @@ int amoi(char *str, int size) {
 }
 
 /* Determine la valeur correspondante du charactère, ainsi que les registres spéciaux (sp, fp, ra) et gère la notation hexdécimale*/
-int anous(char * registerStr, int size) {
-    int registerValue = 0;
+int anous(char * argStr, int size) {
+    int operandValue = 0;
+    char * registerStr = argStr+1;
 
     if (size > 2 && registerStr[0] == '0' && registerStr[1] == 'x') { /* écriture hexa*/
-        registerValue = amoi(registerStr+2, size -2);
-        printf("esskilrentrlaomoin\n");
-    } else {
+        operandValue = amoi(registerStr+2, size -2);
+    } else if( argStr[0] == '$' ) {
         if(isalpha(registerStr[0])) { /*registres spéciaux*/
             if(!strncmp(registerStr, "zero", size)) {
-                registerValue = 0;
+                operandValue = 0;
             }
             if(!strncmp(registerStr, "at", size)) {
-                registerValue = 1;
+                operandValue = 1;
             }
             if(registerStr[0] == 'v' && isdigit(registerStr[1])) {
-                registerValue = 2 + atoi(registerStr + 1);
+                operandValue = 2 + atoi(registerStr + 1);
             }
             if(registerStr[0] == 'a' && isdigit(registerStr[1])) {
-                registerValue = 4 + atoi(registerStr + 1);
+                operandValue = 4 + atoi(registerStr + 1);
             }
             if(registerStr[0] == 't' && isdigit(registerStr[1])) {
                 if(atoi(registerStr + 1) < 8) {
-                    registerValue = 8 + atoi(registerStr + 1);
+                    operandValue = 8 + atoi(registerStr + 1);
                 } 
                 else {
-                    registerValue = 16 + atoi(registerStr + 1);
+                    operandValue = 16 + atoi(registerStr + 1);
                 } 
             }
             if(registerStr[0] == 's' && isdigit(registerStr[1])) {
-                registerValue = 16 + atoi(registerStr + 1);
+                operandValue = 16 + atoi(registerStr + 1);
             }
             if(registerStr[0] == 'k' && isdigit(registerStr[1])) {
-                registerValue = 26 + atoi(registerStr +1);
+                operandValue = 26 + atoi(registerStr +1);
             }
             if(!strncmp(registerStr, "gp", size)) {
-                registerValue = 28;
+                operandValue = 28;
             }
             if(!strncmp(registerStr, "sp", size)) {
-                registerValue = 29;
+                operandValue = 29;
             }
             if(!strncmp(registerStr, "fp", size)) {
-                registerValue = 30;
+                operandValue = 30;
             }
             if(!strncmp(registerStr, "ra", size)) {
-                registerValue = 31;
+                operandValue = 31;
             }
         } else { /*Cas classique*/
-            registerValue = atoi(registerStr);
+            operandValue = atoi(registerStr);
         }
+    } else {
+        operandValue = atoi(argStr);
     }
 
-    return registerValue;
+    return operandValue;
 }
 
 int papattesdechat(int * args, int * size, int n) {
@@ -163,9 +165,9 @@ int papattesdechatTypeJ(int opcode, int target) {
 
 void tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
     char *instruction = ins + indexes[0];
-    int arg1 = atoi(ins + indexes[1]);
-    int arg2 = atoi(ins + indexes[2]);
-    int arg3 = atoi(ins + indexes[3]);
+    int arg1 = anous(ins + indexes[1]-1,lengths[1]+1);
+    int arg2 = anous(ins + indexes[2]-1,lengths[2]+1);
+    int arg3 = anous(ins + indexes[3],lengths[3]);
 
     char *instructions[] = INS_NAMES;
     int (*functions[])(int, int, int) = INS_POINTERS;
@@ -214,18 +216,3 @@ void MIPStoHex(char *ins, char hex[SIZE]) {
     afficherN(ins + indexes[2], lengths[2]);
     afficherN(ins + indexes[3], lengths[3]);*/
 }
-
-/*
-int main() {
-    printf("hexa1 : %d\n", anous("0x18", 4) );
-    printf("hexa2 : %d\n", anous("0xa5b", 5) );
-    printf("hexa3 : %d\n", anous("0x1da2", 6) );
-    printf("zero : %d\n", anous("zero", 4) );
-    printf("at : %d\n", anous("at", 2) );
-    printf("v1 : %d\n", anous("v1", 2) );
-    printf("t0 : %d\n", anous("t0", 2) );
-    printf("t7 : %d\n", anous("t7", 2) );
-    printf("t8 : %d\n", anous("t8", 2) );
-    printf("gp : %d\n", anous("gp", 2) );
-    return 1;
-}*/
