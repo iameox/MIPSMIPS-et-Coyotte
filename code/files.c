@@ -39,7 +39,7 @@ int readLine(FILE *sourceFile, char *sourceLine) {
 	return i;
 }
 
-/* Écrit une ligne à la fin d'un fichier fichier */
+/* Écrit une ligne à la fin d'un fichier */
 void writeLine(FILE *resultFile, char *resultLine) {
 	int i;
 	
