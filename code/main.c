@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "functions.h"
 #include "files.h"
@@ -9,8 +8,8 @@
 int main(int argc, char *argv[]) {
 	char *sourceName, *resultName;
 	FILE *sourceFile, *resultFile;
-	char c, *sourceLine = malloc(MAXLEN*sizeof(char)), resultLine[SIZE];
-	int i, write;
+	char sourceLine[MAXLEN], resultLine[SIZE];
+	int lineSize, write;
 
 
 	if(argc <= 1) {
@@ -28,34 +27,17 @@ int main(int argc, char *argv[]) {
 		resultFile = openFile(resultName, "wb");
 
 		while(!feof(sourceFile)) {
-			i = 0;
-			c = fgetc(sourceFile);
-			
-			while (c != '\n' && c != '\r' && !feof(sourceFile)) {
-				sourceLine[i] = c;
+			lineSize = readLine(sourceFile, sourceLine);
 
-				c = fgetc(sourceFile);
-				i++;
-			}
-
-			//printf("**%s**\n", sourceLine);
-
-			if(i > 0) {
-				write = MIPStoHex(sourceLine, i, resultLine);
+			if(lineSize > 0) {
+				write = MIPStoHex(sourceLine, lineSize, resultLine);
 
 				if (write) {
-					for(i = 0 ; i < SIZE ; i++) {
-                    	if (i % 4 == 0 && i != 0) fputc(' ', resultFile);
-						fputc(resultLine[i], resultFile);
-					}
-
-					fputc('\n', resultFile);
+					writeLine(resultFile, resultLine);
 				}
 			}
 		}
 	}
-
-	free(sourceLine);
 
 	closeFile(sourceName, sourceFile);
 	closeFile(resultName, resultFile);

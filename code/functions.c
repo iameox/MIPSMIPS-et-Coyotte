@@ -5,17 +5,6 @@
 #include "files.h"
 #include "instructions.h"
 
-void afficherN(char *c, int n) {
-    int i;
-
-    printf("'");
-    for (i = 0; i < n; i++) {
-        printf("%c", c[i]);
-    }
-
-    printf("' ");
-}
-
 /* Retourne l'index du premier mot-clé trouvé */
 int wordIndex(char *ins, int n, char *delimiters) {
     int i = 0, stop = 0, j;
@@ -70,7 +59,6 @@ int asciiToInt(char *str, int size, int base) {
         } else {
             digit = str[i] - ASCII_TO_DEC_OFFSET; /*Décalage par rapport à la table ASCII pour passer d'un caractère numérique à sa valeur décimale*/
         }
-        /*printf("le digit : %d\n", digit);*/
         value += digit*power(base ,size - i-1);
     }
     return value;
@@ -133,7 +121,6 @@ int convertArgument(char * argStr, int size) {
             operandValue = asciiToInt(argStr, size, 10);
         }
     }
-    /*printf("Opérande : %d\n", operandValue);*/
     return operandValue;
 }
 
@@ -211,15 +198,6 @@ int MIPStoHex(char *ins, int n, char hex[SIZE]) {
         i += index + length;
         j++;
     }
-
-    //printf("index : %d %d %d %d\n", indexes[0], indexes[1], indexes[2], indexes[3]);
-    //printf("taille : %d %d %d %d\n", lengths[0], lengths[1], lengths[2], lengths[3]);
-
-    /*afficherN(ins + indexes[0], lengths[0]);
-    afficherN(ins + indexes[1], lengths[1]);
-    afficherN(ins + indexes[2], lengths[2]);
-    afficherN(ins + indexes[3], lengths[3]);
-    printf("\n");*/
 
     return lengths[0] != 0 ? mapInstruction(ins, indexes, lengths, hex) : 0;
 }
