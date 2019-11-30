@@ -27,10 +27,10 @@ int main(int argc, char *argv[]) {
 		sourceFile = openFile(sourceName, "rb");
 		resultFile = openFile(resultName, "wb");
 
-		while(!feof(sourceFile)) {
+		while (!feof(sourceFile)) {
 			lineSize = readLine(sourceFile, sourceLine);
 
-			if(lineSize > 0) {
+			if (lineSize > 0) {
 				write = MIPStoHex(sourceLine, lineSize, resultLine);
 
 				if (write) {
