@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include "functions.h"
 #include "files.h"
 #include "instructions.h"
@@ -63,25 +62,12 @@ int power(int a, int b) {
 int amoi(char *str, int size, int base) {
     int i, digit, value = 0;
     for(i = 0 ; i < size ; i++) {
-        switch(str[i]) {
-            case 'a': digit = 10;
-            break;
-            case 'b': digit = 11;
-            break;
-            case 'c': digit = 12;
-            break;
-            case 'd': digit = 13;
-            break;
-            case 'e': digit = 14;
-            break;
-            case 'f': digit = 15;
-            break;
-            default: digit = str[i] - 48; /*Wola faut trouver un équivalent de atoi mais pour des char*/
-            break;
+        if(base > 10 && str[i] >= 'a'&& str[i] < 'a' - 10 + base) { /*Detection des digits plus grands que 10, majuscules non supportées*/
+            digit = str[i] - ASCII_TO_HEX_OFFSET; /*Décalage par rapport à la table ASCII pour passer d'un caractère alphabétique à sa valeur hexadécimale*/
+        } else {
+            digit = str[i] - ASCII_TO_DEC_OFFSET; /*Décalage par rapport à la table ASCII pour passer d'un caractère numérique à sa valeur décimale*/
         }
-        /*printf("le digit : %d\n", digit);
-        printf("la puissance de 16 : %d\n", size-i-1);
-        printf("ce que je trouve pour la puissance de 16: %d\n", power(16,size - i-1));*/
+        /*printf("le digit : %d\n", digit);*/
         value += digit*power(base ,size - i-1);
     }
     return value;
@@ -90,16 +76,16 @@ int amoi(char *str, int size, int base) {
 /* Determine la valeur correspondante du charactère, ainsi que les registres spéciaux (sp, fp, ra) et gère la notation hexdécimale*/
 int anous(char * argStr, int size) {
     int operandValue = 0;
-    char * registerStr = argStr+1;
+    char * registerStr = argStr + 1;
 
-    if (size > 2 && registerStr[0] == '0' && registerStr[1] == 'x') { /* écriture hexa*/
-        operandValue = amoi(registerStr+2, size -2, 16);
-    } else if( argStr[0] == '$' ) {
+    if (size > 2 && argStr[0] == '0' && argStr[1] == 'x') { /* écriture hexa*/
+        operandValue = amoi(argStr+2, size -2, 16);
+    } else if( argStr[0] == '$') { /*registres*/
         if(isalpha(registerStr[0])) { /*registres spéciaux*/
-            if(!strncmp(registerStr, "zero", size)) {
+            if(!strncmp(registerStr, "zero", size-1)) {
                 operandValue = 0;
             }
-            if(!strncmp(registerStr, "at", size)) {
+            if(!strncmp(registerStr, "at", size-1)) {
                 operandValue = 1;
             }
             if(registerStr[0] == 'v' && isdigit(registerStr[1])) {
@@ -109,7 +95,7 @@ int anous(char * argStr, int size) {
                 operandValue = 4 + amoi(registerStr + 1, size - 2, 10);
             }
             if(registerStr[0] == 't' && isdigit(registerStr[1])) {
-                if(atoi(registerStr + 1) < 8) {
+                if(amoi(registerStr + 1, size - 2 , 10) < 8) {
                     operandValue = 8 + amoi(registerStr + 1, size - 2, 10);
                 } 
                 else {
@@ -122,16 +108,16 @@ int anous(char * argStr, int size) {
             if(registerStr[0] == 'k' && isdigit(registerStr[1])) {
                 operandValue = 26 + amoi(registerStr + 1, size - 2, 10);
             }
-            if(!strncmp(registerStr, "gp", size)) {
+            if(!strncmp(registerStr, "gp", size-1)) {
                 operandValue = 28;
             }
-            if(!strncmp(registerStr, "sp", size)) {
+            if(!strncmp(registerStr, "sp", size-1)) {
                 operandValue = 29;
             }
-            if(!strncmp(registerStr, "fp", size)) {
+            if(!strncmp(registerStr, "fp", size-1)) {
                 operandValue = 30;
             }
-            if(!strncmp(registerStr, "ra", size)) {
+            if(!strncmp(registerStr, "ra", size-1)) {
                 operandValue = 31;
             }
         } else { /*Cas classique*/
@@ -144,7 +130,7 @@ int anous(char * argStr, int size) {
             operandValue = amoi(argStr, size, 10);
         }
     }
-
+    /*printf("Opérande : %d\n", operandValue);*/
     return operandValue;
 }
 
@@ -184,8 +170,6 @@ int tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
     int arg1 = anous(ins + indexes[1], lengths[1]);
     int arg2 = anous(ins + indexes[2], lengths[2]);
     int arg3 = anous(ins + indexes[3], lengths[3]);
-
-    printf("%d\n", arg2);
 
     char *names[] = INS_NAMES;
     int (*functions[])(int, int, int) = INS_POINTERS;
