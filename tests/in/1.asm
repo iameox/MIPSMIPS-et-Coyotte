@@ -1,5 +1,5 @@
 ADDI $1,$zero,0
-ADDI $2,$0,3
+ADDI $2,$0,1
 ADDI $5,$0,0x1f
 
 #Boucle

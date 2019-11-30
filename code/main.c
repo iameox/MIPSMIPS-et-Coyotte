@@ -3,11 +3,9 @@
 #include "functions.h"
 #include "files.h"
 
-#define MAXLEN 50
-
 int main(int argc, char *argv[]) {
-	char *sourceName, *resultName;
 	FILE *sourceFile, *resultFile;
+	char *sourceName, *resultName;
 	char sourceLine[MAXLEN], resultLine[SIZE];
 	int lineSize, write;
 
@@ -17,7 +15,7 @@ int main(int argc, char *argv[]) {
 	} else { 
 		if (argc == 2) {
 			printf("Nom du fichier résultat non trouvé : mis dans \"../tests/out.s\" par défaut\n");
-			resultName = "../tests/out.s";
+			resultName = "tests/out/out.s";
 
 		} else {
 			resultName = argv[2];
