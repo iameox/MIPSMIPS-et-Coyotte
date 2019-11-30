@@ -53,13 +53,16 @@ int wordLength(char *ins, int n, char *delimiters) {
     return stop ? i - 1 : i;
 }
 
+/* Fonction puissance */
 int power(int a, int b) {
     int i, result = 1;
     for(i = 0 ; i < b ; i++) result *= a;
     return result;
 }
 
-int amoi(char *str, int size, int base) {
+
+/* Convertit un caractère ascii en sa valeur numérique, en prenant en compte la base */
+int asciiToInt(char *str, int size, int base) {
     int i, digit, value = 0;
     for(i = 0 ; i < size ; i++) {
         if(base > 10 && str[i] >= 'a'&& str[i] < 'a' - 10 + base) { /*Detection des digits plus grands que 10, majuscules non supportées*/
@@ -73,13 +76,13 @@ int amoi(char *str, int size, int base) {
     return value;
 }
 
-/* Determine la valeur correspondante du charactère, ainsi que les registres spéciaux (sp, fp, ra) et gère la notation hexdécimale*/
-int anous(char * argStr, int size) {
+/* Determine la valeur correspondante d'un argument en prenant en compte les différents modes (immédiat, registres spéciaux ou non, hexadécimal) */
+int convertArgument(char * argStr, int size) {
     int operandValue = 0;
     char * registerStr = argStr + 1;
 
     if (size > 2 && argStr[0] == '0' && argStr[1] == 'x') { /* écriture hexa*/
-        operandValue = amoi(argStr+2, size -2, 16);
+        operandValue = asciiToInt(argStr+2, size -2, 16);
     } else if( argStr[0] == '$') { /*registres*/
         if(isalpha(registerStr[0])) { /*registres spéciaux*/
             if(!strncmp(registerStr, "zero", size-1)) {
@@ -89,24 +92,24 @@ int anous(char * argStr, int size) {
                 operandValue = 1;
             }
             if(registerStr[0] == 'v' && isdigit(registerStr[1])) {
-                operandValue = 2 + amoi(registerStr + 1, size - 2, 10);
+                operandValue = 2 + asciiToInt(registerStr + 1, size - 2, 10);
             }
             if(registerStr[0] == 'a' && isdigit(registerStr[1])) {
-                operandValue = 4 + amoi(registerStr + 1, size - 2, 10);
+                operandValue = 4 + asciiToInt(registerStr + 1, size - 2, 10);
             }
             if(registerStr[0] == 't' && isdigit(registerStr[1])) {
-                if(amoi(registerStr + 1, size - 2 , 10) < 8) {
-                    operandValue = 8 + amoi(registerStr + 1, size - 2, 10);
+                if(asciiToInt(registerStr + 1, size - 2 , 10) < 8) {
+                    operandValue = 8 + asciiToInt(registerStr + 1, size - 2, 10);
                 } 
                 else {
-                    operandValue = 16 + amoi(registerStr + 1, size - 2, 10);
+                    operandValue = 16 + asciiToInt(registerStr + 1, size - 2, 10);
                 } 
             }
             if(registerStr[0] == 's' && isdigit(registerStr[1])) {
-                operandValue = 16 + amoi(registerStr + 1, size - 2, 10);
+                operandValue = 16 + asciiToInt(registerStr + 1, size - 2, 10);
             }
             if(registerStr[0] == 'k' && isdigit(registerStr[1])) {
-                operandValue = 26 + amoi(registerStr + 1, size - 2, 10);
+                operandValue = 26 + asciiToInt(registerStr + 1, size - 2, 10);
             }
             if(!strncmp(registerStr, "gp", size-1)) {
                 operandValue = 28;
@@ -121,20 +124,20 @@ int anous(char * argStr, int size) {
                 operandValue = 31;
             }
         } else { /*Cas classique*/
-            operandValue = amoi(registerStr, size - 1, 10);
+            operandValue = asciiToInt(registerStr, size - 1, 10);
         }
     } else {
         if (argStr[0] == '-') {
-            operandValue = -amoi(argStr + 1, size - 1, 10);
+            operandValue = -asciiToInt(argStr + 1, size - 1, 10);
         } else {
-            operandValue = amoi(argStr, size, 10);
+            operandValue = asciiToInt(argStr, size, 10);
         }
     }
     /*printf("Opérande : %d\n", operandValue);*/
     return operandValue;
 }
 
-int papattesdechat(int * args, int * size, int n) {
+int getWord(int * args, int * size, int n) {
     int result = 0, i;
 
     for (i = 0; i < n; i++) {
@@ -144,32 +147,32 @@ int papattesdechat(int * args, int * size, int n) {
     return result;
 }
 
-int papattesdechatTypeR(int opcode, int rs, int rt, int rd, int sa, int function) {
+int getTypeRWord(int opcode, int rs, int rt, int rd, int sa, int function) {
     int args[] = {opcode, rs, rt, rd, sa, function};
     int size[] = {6, 5, 5, 5, 5, 6};
 
-    return papattesdechat(args, size, 6);
+    return getWord(args, size, 6);
 }
 
-int papattesdechatTypeI(int opcode, int rs, int rt, int immediate) {
+int getTypeIWord(int opcode, int rs, int rt, int immediate) {
     int args[] = {opcode, rs, rt, immediate};
     int size[] = {6, 5, 5, 16};
 
-    return papattesdechat(args, size, 4);
+    return getWord(args, size, 4);
 }
 
-int papattesdechatTypeJ(int opcode, int target) {
+int getTypeJWord(int opcode, int target) {
     int args[] = {opcode, target};
     int size[] = {6, 26};
 
-    return papattesdechat(args, size, 2);
+    return getWord(args, size, 2);
 }
 
-int tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
+int mapInstruction(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
     char *name = ins + indexes[0];
-    int arg1 = anous(ins + indexes[1], lengths[1]);
-    int arg2 = anous(ins + indexes[2], lengths[2]);
-    int arg3 = anous(ins + indexes[3], lengths[3]);
+    int arg1 = convertArgument(ins + indexes[1], lengths[1]);
+    int arg2 = convertArgument(ins + indexes[2], lengths[2]);
+    int arg3 = convertArgument(ins + indexes[3], lengths[3]);
 
     char *names[] = INS_NAMES;
     int (*functions[])(int, int, int) = INS_POINTERS;
@@ -218,5 +221,5 @@ int MIPStoHex(char *ins, int n, char hex[SIZE]) {
     afficherN(ins + indexes[3], lengths[3]);
     printf("\n");*/
 
-    return lengths[0] != 0 ? tafonctionpetee(ins, indexes, lengths, hex) : 0;
+    return lengths[0] != 0 ? mapInstruction(ins, indexes, lengths, hex) : 0;
 }

@@ -7,6 +7,6 @@
 
 int MIPStoHex(char *ins, int n, char hex[SIZE]);
 
-int papattesdechatTypeR(int opcode, int rs, int rt, int rd, int sa, int function);
-int papattesdechatTypeI(int opcode, int rs, int rt, int immediate);
-int papattesdechatTypeJ(int opcode, int target);
+int getTypeRWord(int opcode, int rs, int rt, int rd, int sa, int function);
+int getTypeIWord(int opcode, int rs, int rt, int immediate);
+int getTypeJWord(int opcode, int target);
