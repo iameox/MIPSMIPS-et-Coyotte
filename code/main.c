@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
 
 	} else { 
 		if (argc == 2) {
-			printf("Nom du fichier résultat non trouvé : mis dans \"tests/out.s\" par défaut\n");
-			resultName = "tests/out.s";
+			printf("Nom du fichier résultat non trouvé : mis dans \"../tests/out.s\" par défaut\n");
+			resultName = "../tests/out.s";
 
 		} else {
 			resultName = argv[2];
