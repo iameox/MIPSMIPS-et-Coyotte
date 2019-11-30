@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "files.h"
 #include <stdlib.h>
+#include "files.h"
 
 /*Fonction qui ouvre un fichier ou quitte avec un message d'erreur si il y a un problème*/
 FILE * openFile(const char *nom, const char *mode){

@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 			i = 0;
 			c = fgetc(sourceFile);
 			
-			while (c != '\n' && !feof(sourceFile)) {
+			while (c != '\n' && c != '\r' && !feof(sourceFile)) {
 				sourceLine[i] = c;
 
 				c = fgetc(sourceFile);
@@ -41,16 +41,16 @@ int main(int argc, char *argv[]) {
 			//printf("**%s**\n", sourceLine);
 
 			if(i > 0) {
-				write = MIPStoHex(sourceLine, resultLine);
+				write = MIPStoHex(sourceLine, i, resultLine);
 
 				if (write) {
 					for(i = 0 ; i < SIZE ; i++) {
                     	if (i % 4 == 0 && i != 0) fputc(' ', resultFile);
 						fputc(resultLine[i], resultFile);
 					}
-				}
 
-                fputc('\n', resultFile);
+					fputc('\n', resultFile);
+				}
 			}
 		}
 	}

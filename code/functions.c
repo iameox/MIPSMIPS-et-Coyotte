@@ -14,14 +14,14 @@ void afficherN(char *c, int n) {
         printf("%c", c[i]);
     }
 
-    printf("'\n");
+    printf("' ");
 }
 
 /* Retourne l'index du premier mot-clé trouvé */
-int wordIndex(char *ins, char *delimiters) {
+int wordIndex(char *ins, int n, char *delimiters) {
     int i = 0, stop = 0, j;
     
-    while (ins[i] != '\n' && ins[i] != '\0' && !stop) {
+    while (i < n && ins[i] != '\n' && ins[i] != '\r' && ins[i] != '\0' && !stop) {
         stop = 1;
         j = 0;
 
@@ -37,10 +37,10 @@ int wordIndex(char *ins, char *delimiters) {
 }
 
 /* Retourne la longueur du premier mot-clé trouvé */
-int wordLength(char *ins, char *delimiters) {
+int wordLength(char *ins, int n, char *delimiters) {
     int i = 0, stop = 0, j;
     
-    while (ins[i] != '\n' && ins[i] != '\0' && !stop) {
+    while (i < n && ins[i] != '\n' && ins[i] != '\r' && ins[i] != '\0' && !stop) {
         j = 0;
 
         while (delimiters[j] != '\0' && !stop) {
@@ -60,7 +60,7 @@ int power(int a, int b) {
     return result;
 }
 
-int amoi(char *str, int size) {
+int amoi(char *str, int size, int base) {
     int i, digit, value = 0;
     for(i = 0 ; i < size ; i++) {
         switch(str[i]) {
@@ -82,7 +82,7 @@ int amoi(char *str, int size) {
         /*printf("le digit : %d\n", digit);
         printf("la puissance de 16 : %d\n", size-i-1);
         printf("ce que je trouve pour la puissance de 16: %d\n", power(16,size - i-1));*/
-        value += digit*power(16,size - i-1);
+        value += digit*power(base ,size - i-1);
     }
     return value;
 }
@@ -93,7 +93,7 @@ int anous(char * argStr, int size) {
     char * registerStr = argStr+1;
 
     if (size > 2 && registerStr[0] == '0' && registerStr[1] == 'x') { /* écriture hexa*/
-        operandValue = amoi(registerStr+2, size -2);
+        operandValue = amoi(registerStr+2, size -2, 16);
     } else if( argStr[0] == '$' ) {
         if(isalpha(registerStr[0])) { /*registres spéciaux*/
             if(!strncmp(registerStr, "zero", size)) {
@@ -103,24 +103,24 @@ int anous(char * argStr, int size) {
                 operandValue = 1;
             }
             if(registerStr[0] == 'v' && isdigit(registerStr[1])) {
-                operandValue = 2 + atoi(registerStr + 1);
+                operandValue = 2 + amoi(registerStr + 1, size - 2, 10);
             }
             if(registerStr[0] == 'a' && isdigit(registerStr[1])) {
-                operandValue = 4 + atoi(registerStr + 1);
+                operandValue = 4 + amoi(registerStr + 1, size - 2, 10);
             }
             if(registerStr[0] == 't' && isdigit(registerStr[1])) {
                 if(atoi(registerStr + 1) < 8) {
-                    operandValue = 8 + atoi(registerStr + 1);
+                    operandValue = 8 + amoi(registerStr + 1, size - 2, 10);
                 } 
                 else {
-                    operandValue = 16 + atoi(registerStr + 1);
+                    operandValue = 16 + amoi(registerStr + 1, size - 2, 10);
                 } 
             }
             if(registerStr[0] == 's' && isdigit(registerStr[1])) {
-                operandValue = 16 + atoi(registerStr + 1);
+                operandValue = 16 + amoi(registerStr + 1, size - 2, 10);
             }
             if(registerStr[0] == 'k' && isdigit(registerStr[1])) {
-                operandValue = 26 + atoi(registerStr +1);
+                operandValue = 26 + amoi(registerStr + 1, size - 2, 10);
             }
             if(!strncmp(registerStr, "gp", size)) {
                 operandValue = 28;
@@ -135,10 +135,14 @@ int anous(char * argStr, int size) {
                 operandValue = 31;
             }
         } else { /*Cas classique*/
-            operandValue = atoi(registerStr);
+            operandValue = amoi(registerStr, size - 1, 10);
         }
     } else {
-        operandValue = atoi(argStr);
+        if (argStr[0] == '-') {
+            operandValue = -amoi(argStr + 1, size - 1, 10);
+        } else {
+            operandValue = amoi(argStr, size, 10);
+        }
     }
 
     return operandValue;
@@ -181,6 +185,8 @@ int tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
     int arg2 = anous(ins + indexes[2], lengths[2]);
     int arg3 = anous(ins + indexes[3], lengths[3]);
 
+    printf("%d\n", arg2);
+
     char *names[] = INS_NAMES;
     int (*functions[])(int, int, int) = INS_POINTERS;
     int i = 0, write = 0;
@@ -200,17 +206,17 @@ int tafonctionpetee(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
     return write;
 }
 
-int MIPStoHex(char *ins, char hex[SIZE]) {
-    int index = wordIndex(ins, " \t");
-    int length = wordLength(ins + index, " \t#");
+int MIPStoHex(char *ins, int n, char hex[SIZE]) {
+    int index = wordIndex(ins, n, " \t");
+    int length = wordLength(ins + index, n - index, " \t#");
     int i = index + length, j = 1;
 
     int indexes[4] = {index};
     int lengths[4] = {length};
 
-    while (j < 4 && length != 0) {
-        index = wordIndex(ins + i, " \t,(");
-        length = wordLength(ins + i + index, " \t,()#");
+    while (j < 4 && i < n) {
+        index = wordIndex(ins + i, n - i, " \t,(");
+        length = wordLength(ins + i + index, n - i - index, " \t,()#");
 
         indexes[j] = i + index;
         lengths[j] = length;
@@ -219,13 +225,14 @@ int MIPStoHex(char *ins, char hex[SIZE]) {
         j++;
     }
 
-    /*printf("index : %d %d %d %d\n", indexes[0], indexes[1], indexes[2], indexes[3]);
-    printf("taille : %d %d %d %d\n", lengths[0], lengths[1], lengths[2], lengths[3]);
+    //printf("index : %d %d %d %d\n", indexes[0], indexes[1], indexes[2], indexes[3]);
+    //printf("taille : %d %d %d %d\n", lengths[0], lengths[1], lengths[2], lengths[3]);
 
-    afficherN(ins + indexes[0], lengths[0]);
+    /*afficherN(ins + indexes[0], lengths[0]);
     afficherN(ins + indexes[1], lengths[1]);
     afficherN(ins + indexes[2], lengths[2]);
-    afficherN(ins + indexes[3], lengths[3]);*/
+    afficherN(ins + indexes[3], lengths[3]);
+    printf("\n");*/
 
-    return tafonctionpetee(ins, indexes, lengths, hex);
+    return lengths[0] != 0 ? tafonctionpetee(ins, indexes, lengths, hex) : 0;
 }

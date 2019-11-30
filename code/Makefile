@@ -14,4 +14,4 @@ files.o: files.c files.h
 	gcc -c files.c -Wall
 
 clean:
-	rm -rf *.o
+	rm -rf *.o out.s
