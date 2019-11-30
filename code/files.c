@@ -5,10 +5,10 @@
 
 /* Ouvre un fichier ou quitte avec un message d'erreur si il y a un problème */
 FILE *openFile(const char *name, const char *mode){
-	FILE * fd = fopen(name,mode);
+	FILE * fd = fopen(name, mode);
 
 	if(fd == NULL){
-		fprintf(stderr,"Erreur lors de l'ouverture fichier %s :\n", name);
+		fprintf(stderr, "Erreur lors de l'ouverture fichier %s :\n", name);
 		perror("");
 		exit(EXIT_FAILURE);
 	}
@@ -18,7 +18,7 @@ FILE *openFile(const char *name, const char *mode){
 /* Ferme un fichier ou quitte avec un message d'erreur si il y a un problème */
 void closeFile(const char *name, FILE *fd){
 	if(fclose(fd) == EOF){
-		fprintf(stderr,"Erreur lors de la fermeture du fichier %s :", name);
+		fprintf(stderr, "Erreur lors de la fermeture du fichier %s :", name);
 		perror("");
 		exit(EXIT_FAILURE);
 	}
@@ -40,7 +40,7 @@ int readLine(FILE *sourceFile, char *sourceLine) {
 }
 
 /* Écrit une ligne à la fin d'un fichier fichier */
-void writeLine(FILE *resultFile, char * resultLine) {
+void writeLine(FILE *resultFile, char *resultLine) {
 	int i;
 	
 	for(i = 0; i < SIZE; i++) {
