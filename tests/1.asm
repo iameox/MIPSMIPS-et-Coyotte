@@ -1,4 +1,4 @@
-ADDI $1,$0,0
+ADDI $1,$zero,0
 ADDI $2,$0,3
 ADDI $5,$0,0x1f
 

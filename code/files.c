@@ -3,29 +3,29 @@
 #include "files.h"
 #include "functions.h"
 
-/*Fonction qui ouvre un fichier ou quitte avec un message d'erreur si il y a un problème*/
-FILE * openFile(const char *nom, const char *mode){
-	FILE * fd = fopen(nom,mode);
+/* Ouvre un fichier ou quitte avec un message d'erreur si il y a un problème */
+FILE *openFile(const char *name, const char *mode){
+	FILE * fd = fopen(name,mode);
 
-	if(NULL == fd){
-		fprintf(stderr,"Erreur ouverture fichier %s :\n", nom);
+	if(fd == NULL){
+		fprintf(stderr,"Erreur lors de l'ouverture fichier %s :\n", name);
 		perror("");
 		exit(EXIT_FAILURE);
 	}
 	return fd;
 }
 
-/*Fonction qui ferme un fichier ou quitte avec un message d'erreur si il y a un problème*/
-void closeFile(const char *nom, FILE * fd){
-	if(EOF == fclose(fd)){
-		fprintf(stderr,"Erreur fermeture du fichier %s :", nom);
+/* Ferme un fichier ou quitte avec un message d'erreur si il y a un problème */
+void closeFile(const char *name, FILE *fd){
+	if(fclose(fd) == EOF){
+		fprintf(stderr,"Erreur lors de la fermeture du fichier %s :", name);
 		perror("");
 		exit(EXIT_FAILURE);
 	}
 }
 
-
-int readLine(FILE * sourceFile, char *sourceLine) {
+/* Lit une ligne d'un fichier */
+int readLine(FILE *sourceFile, char *sourceLine) {
 	int i = 0;
 	char c = fgetc(sourceFile);
 	
@@ -39,9 +39,11 @@ int readLine(FILE * sourceFile, char *sourceLine) {
 	return i;
 }
 
-void writeLine(FILE * resultFile, char * resultLine) {
+/* Écrit une ligne à la fin d'un fichier fichier */
+void writeLine(FILE *resultFile, char * resultLine) {
 	int i;
-	for(i = 0 ; i < SIZE ; i++) {
+	
+	for(i = 0; i < SIZE; i++) {
     	if (i % 4 == 0 && i != 0) fputc(' ', resultFile);
 		fputc(resultLine[i], resultFile);
 	}

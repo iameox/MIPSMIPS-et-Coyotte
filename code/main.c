@@ -11,13 +11,14 @@ int main(int argc, char *argv[]) {
 	char sourceLine[MAXLEN], resultLine[SIZE];
 	int lineSize, write;
 
-
 	if(argc <= 1) {
 		printf("Arguments insuffisants.\nUsage : ./main [nom fichier source] [nom fichier résultat]\n");
+
 	} else { 
 		if (argc == 2) {
-			printf("Nom du fichier résultat non trouvé : mis dans \"out.s\" par défaut\n");
-			resultName = "out.s";
+			printf("Nom du fichier résultat non trouvé : mis dans \"tests/out.s\" par défaut\n");
+			resultName = "tests/out.s";
+
 		} else {
 			resultName = argv[2];
 		}
