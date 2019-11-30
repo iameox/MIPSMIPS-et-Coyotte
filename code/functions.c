@@ -79,40 +79,40 @@ int convertArgument(char * argStr, int size) {
         if (isalpha(registerStr[0])) { /* Registres spéciaux */
             if (!strncmp(registerStr, "zero", size-1)) {
                 operandValue = 0;
-            }
-            if (!strncmp(registerStr, "at", size-1)) {
+            
+            } else if (!strncmp(registerStr, "at", size-1)) {
                 operandValue = 1;
-            }
-            if (registerStr[0] == 'v' && isdigit(registerStr[1])) {
+            
+            } else if (registerStr[0] == 'v' && isdigit(registerStr[1])) {
                 operandValue = 2 + asciiToInt(registerStr + 1, size - 2, 10);
-            }
-            if (registerStr[0] == 'a' && isdigit(registerStr[1])) {
+            
+            } else if (registerStr[0] == 'a' && isdigit(registerStr[1])) {
                 operandValue = 4 + asciiToInt(registerStr + 1, size - 2, 10);
-            }
-            if (registerStr[0] == 't' && isdigit(registerStr[1])) {
+            
+            } else if (registerStr[0] == 't' && isdigit(registerStr[1])) {
                 if (asciiToInt(registerStr + 1, size - 2 , 10) < 8) {
                     operandValue = 8 + asciiToInt(registerStr + 1, size - 2, 10);
                 
                 } else {
                     operandValue = 16 + asciiToInt(registerStr + 1, size - 2, 10);
                 } 
-            }
-            if (registerStr[0] == 's' && isdigit(registerStr[1])) {
+            
+            } else if (registerStr[0] == 's' && isdigit(registerStr[1])) {
                 operandValue = 16 + asciiToInt(registerStr + 1, size - 2, 10);
-            }
-            if (registerStr[0] == 'k' && isdigit(registerStr[1])) {
+            
+            } else if (registerStr[0] == 'k' && isdigit(registerStr[1])) {
                 operandValue = 26 + asciiToInt(registerStr + 1, size - 2, 10);
-            }
-            if (!strncmp(registerStr, "gp", size-1)) {
+            
+            } else if (!strncmp(registerStr, "gp", size-1)) {
                 operandValue = 28;
-            }
-            if (!strncmp(registerStr, "sp", size-1)) {
+            
+            } else if (!strncmp(registerStr, "sp", size-1)) {
                 operandValue = 29;
-            }
-            if (!strncmp(registerStr, "fp", size-1)) {
+            
+            } else if (!strncmp(registerStr, "fp", size-1)) {
                 operandValue = 30;
-            }
-            if (!strncmp(registerStr, "ra", size-1)) {
+            
+            } else if (!strncmp(registerStr, "ra", size-1)) {
                 operandValue = 31;
             }
 
