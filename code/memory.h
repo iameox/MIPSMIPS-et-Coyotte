@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 typedef struct memSlot {
-	int adress;
-	char value;
+	uint32_t adress;
+	uint8_t value;
 	struct memSlot *next;
 } memSlot;
 
@@ -14,6 +14,6 @@ memSlot *delMemSlot(memSlot *head, int adress);
 void emptyMemory(memSlot *head);
 memSlot *findMemSlot(memSlot *head, int adress);*/
 
-char readMemory(int adress);
-int writeMemory(int adress, char value);
+uint8_t readMemory(uint32_t adress);
+int writeMemory(uint32_t adress, int8_t value);
 void printMemory(void);

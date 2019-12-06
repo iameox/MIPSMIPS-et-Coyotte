@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int REGISTERS[32];
+uint32_t REGISTERS[32];
 
 void initRegisters(void);
 int readRegister(int index);
