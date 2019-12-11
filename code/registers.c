@@ -1,4 +1,5 @@
-uint32_t REGISTERS[32];
+#include <stdio.h>
+#include "registers.h"
 
 void initRegisters(void);
 int readRegister(int index);
