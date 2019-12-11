@@ -52,7 +52,7 @@ void printRegisters(void) {
 	for(i = 0 ; i < columnSize ; i++) {
 		printf(" ");
 		for(j = 0 ; j < columns ; j++) {
-			printf("r[%02d] : %d \t", i + j*columnSize, REGISTERS[i + j*columnSize]);
+			printf("R[%02d] : %d \t", i + j*columnSize, REGISTERS[i + j*columnSize]);
 		}
 		printf("\n");
 	}

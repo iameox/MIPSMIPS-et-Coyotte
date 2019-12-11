@@ -1,10 +1,13 @@
 #include "functions.h"
+#include "registers.h"
 
 int mips_add(int arg1, int arg2, int arg3) {
     int rs = arg2,
         rt = arg3,
-        rd = arg1;
-
+        rd = arg1,
+        rsValue = readRegister(rs),
+        rtValue = readRegister(rt);
+    writeRegister(rd, rsValue + rtValue);
     return getTypeRWord(0, rs, rt, rd, 0, 0x20);
 }
 
