@@ -4,30 +4,37 @@
 #include "memory.h"
 
 void addMemSlot(int address, char value) {
-    if (address > MEMORY_MAX_ADDRESS) {
+    memSlot *new = malloc(sizeof(memSlot)), *element = MEMORY, *prev = MEMORY;
+    int stop = 0;
+
+    if (new == NULL) {
         printf("RT");
 
     } else {
-        memSlot *element = malloc(sizeof(memSlot)), *prev = MEMORY;
-        int stop = 0;
+        new->address = address;
+        new->value = value;
 
-        if (element == NULL) {
-            printf("RT");
+        while (element != NULL && !stop) {
+            if (element->address == address) {
+                element->value = value;
+                stop = 1;
 
-        } else   {
-            element->address = address;
-            element->value = value;
-
-            while (prev != NULL && !stop) {
-                if (prev->next->address > address) {
-                    element->next = prev->next;
-                    prev->next = element;
-
-                    stop = 1;
-                }
-
-                prev = prev->next;
+            } else if (element->address > address) {
+                new->next = prev->next;
+                prev->next = new;
+    
+                stop = 1;
             }
+    
+            prev = element;
+            element = element->next;
+        }
+
+        if (!stop) {
+            new->next = NULL;
+            printf("salut %d %d\n", MEMORY, prev);
+            if (element == MEMORY) MEMORY = new;
+            else prev->next = new;
         }
     }
 }
@@ -36,9 +43,10 @@ void delMemSlot(int address) {
     memSlot *element = MEMORY, *prev = MEMORY;
     int stop = 0;
 
-    while (element->next != NULL && !stop) {
-        if (element->next->address == address) {
-            prev->next = element->next;
+    while (element != NULL && !stop) {
+        if (element->address == address) {
+            if (element == MEMORY) MEMORY = element->next;
+            else prev->next = element->next;
             free(element);
 
             stop = 1;
@@ -51,8 +59,8 @@ void delMemSlot(int address) {
 }
 
 void emptyMemory() {
-    while (MEMORY->next != NULL) {
-        delMemSlot(MEMORY->next->address);
+    while (MEMORY != NULL) {
+        delMemSlot(MEMORY->address);
     }
 }
 
@@ -71,11 +79,17 @@ int writeMemory(uint32_t address, int8_t value) {
 void printMemory(void) {
     memSlot *element = MEMORY;
 
-    printf("---------- Memory Dump -----------");
-    while (element->next != NULL) {
-        printf("%d: %d\n", element->address, element->value);
-        element = element->next;
-    }
+    if (element == NULL) {
+        printf("La mémoire est vide.\n");
 
-    printf("----------------------------------");
+    } else {
+        printf("========== Memory Dump ===========\n");
+
+        while (element != NULL) {
+            printf("@%08X : %u\n", element->address, element->value);
+            element = element->next;
+        }
+    
+        printf("==================================\n");
+    }
 }
