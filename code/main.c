@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 	closeFile(sourceName, sourceFile);
 	closeFile(resultName, resultFile);*/
 
-	
+	printMemory();
 
     return 1;
 }

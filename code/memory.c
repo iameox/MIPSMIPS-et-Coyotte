@@ -3,12 +3,13 @@
 #include <stdint.h>
 #include "memory.h"
 
-memSlot *addMemSlot(int adress, char value) {
+void addMemSlot(int address, char value) {
     if (address > MEMORY_MAX_ADDRESS) {
         printf("RT");
 
     } else {
-        memSlot *element = malloc(sizeof(memSlot)), *prev = MEMORY, stop = 0;
+        memSlot *element = malloc(sizeof(memSlot)), *prev = MEMORY;
+        int stop = 0;
 
         if (element == NULL) {
             printf("RT");
@@ -18,7 +19,7 @@ memSlot *addMemSlot(int adress, char value) {
             element->value = value;
 
             while (prev != NULL && !stop) {
-                if (prev->next.address > address) {
+                if (prev->next->address > address) {
                     element->next = prev->next;
                     prev->next = element;
 
@@ -31,11 +32,12 @@ memSlot *addMemSlot(int adress, char value) {
     }
 }
 
-void delMemSlot(int adress) {
-    memSlot *element = MEMORY, *prev = MEMORY, stop = 0;
+void delMemSlot(int address) {
+    memSlot *element = MEMORY, *prev = MEMORY;
+    int stop = 0;
 
     while (element->next != NULL && !stop) {
-        if (element->next.address == address) {
+        if (element->next->address == address) {
             prev->next = element->next;
             free(element);
 
@@ -50,19 +52,19 @@ void delMemSlot(int adress) {
 
 void emptyMemory() {
     while (MEMORY->next != NULL) {
-        delMemSlot(MEMORY, MEMORY->next->address);
+        delMemSlot(MEMORY->next->address);
     }
 }
 
-memSlot *findMemSlot(int adress) {
+/*memSlot *findMemSlot(int address) {
 
 }
 
-uint8_t readMemory(uint32_t adress) {
+uint8_t readMemory(uint32_t address) {
 
-}
+}*/
 
-int writeMemory(uint32_t adress, int8_t value) {
+int writeMemory(uint32_t address, int8_t value) {
 
 }
 

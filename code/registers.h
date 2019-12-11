@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 uint32_t REGISTERS[32];
 
 void initRegisters(void);
