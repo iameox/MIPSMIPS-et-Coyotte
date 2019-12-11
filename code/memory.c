@@ -12,9 +12,13 @@ memSlot *addMemSlot(MEMORY mem, int adress, char value) {
         if (element == NULL) {
             printf("RT");
 
-        } else {
+        } else   {
+            element->address = address;
+            element->value = value;
+
             while (prev != NULL && !stop) {
                 if (prev->next.address > address) {
+                    element->next = prev->next;
                     prev->next = element;
 
                     stop = 1;
