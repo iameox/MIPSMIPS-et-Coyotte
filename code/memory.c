@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "memory.h"
 
-memSlot *addMemSlot(MEMORY mem, int adress, char value) {
-    if (address > 0xFFFFFFFF) {
+memSlot *addMemSlot(int adress, char value) {
+    if (address > MEMORY_MAX_ADDRESS) {
         printf("RT");
 
     } else {
-        memSlot *element = malloc(sizeof(memSlot)), *prev = mem, stop = 0;
+        memSlot *element = malloc(sizeof(memSlot)), *prev = MEMORY, stop = 0;
 
         if (element == NULL) {
             printf("RT");
@@ -30,8 +31,8 @@ memSlot *addMemSlot(MEMORY mem, int adress, char value) {
     }
 }
 
-void delMemSlot(MEMORY mem, int adress) {
-    memSlot *element = mem, *prev = mem, stop = 0;
+void delMemSlot(int adress) {
+    memSlot *element = MEMORY, *prev = MEMORY, stop = 0;
 
     while (element->next != NULL && !stop) {
         if (element->next.address == address) {
@@ -47,13 +48,13 @@ void delMemSlot(MEMORY mem, int adress) {
     }
 }
 
-void emptyMemory(MEMORY mem) {
-    while (mem->next != NULL) {
-        delMemSlot(mem, mem->next.address);
+void emptyMemory() {
+    while (MEMORY->next != NULL) {
+        delMemSlot(MEMORY, MEMORY->next->address);
     }
 }
 
-memSlot *findMemSlot(MEMORY mem, int adress) {
+memSlot *findMemSlot(int adress) {
 
 }
 
@@ -66,5 +67,13 @@ int writeMemory(uint32_t adress, int8_t value) {
 }
 
 void printMemory(void) {
+    memSlot *element = MEMORY;
 
+    printf("---------- Memory Dump -----------");
+    while (element->next != NULL) {
+        printf("%d: %d\n", element->address, element->value);
+        element = element->next;
+    }
+
+    printf("----------------------------------");
 }

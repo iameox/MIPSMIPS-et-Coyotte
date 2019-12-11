@@ -2,9 +2,10 @@
 #include <string.h>
 #include "functions.h"
 #include "files.h"
+#include "memory.h"
 
 int main(int argc, char *argv[]) {
-	FILE *sourceFile, *resultFile;
+	/*FILE *sourceFile, *resultFile;
 	char *sourceName, *resultName;
 	char sourceLine[MAXLEN], resultLine[SIZE];
 	int lineSize, write;
@@ -39,7 +40,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	closeFile(sourceName, sourceFile);
-	closeFile(resultName, resultFile);
+	closeFile(resultName, resultFile);*/
+
+	
 
     return 1;
 }
