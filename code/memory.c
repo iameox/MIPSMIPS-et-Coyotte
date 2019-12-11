@@ -62,11 +62,11 @@ void emptyMemory() {
 
 uint8_t readMemory(uint32_t address) {
 
-}*/
+}
 
 int writeMemory(uint32_t address, int8_t value) {
 
-}
+}*/
 
 void printMemory(void) {
     memSlot *element = MEMORY;
