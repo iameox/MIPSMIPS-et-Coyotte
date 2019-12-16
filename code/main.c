@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 	char sourceLine[MAXLEN], resultLine[SIZE];
 	int lineSize, write;
 
-	if(argc <= 1) {
+	if (argc <= 1) {
 		printf("Arguments insuffisants.\nUsage : ./main [nom fichier source] [nom fichier résultat]\n");
 
 	} else { 
