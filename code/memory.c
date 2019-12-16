@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "memory.h"
 
-void addMemSlot(int address, char value) {
+void addMemSlot(uint32_t address, int8_t value) {
     memSlot *new = malloc(sizeof(memSlot)), *element = MEMORY, *prev = MEMORY;
     int stop = 0;
 
@@ -35,7 +35,7 @@ void addMemSlot(int address, char value) {
     }
 }
 
-memSlot *findMemSlot(int address) {
+memSlot *findMemSlot(uint32_t address) {
     memSlot *element = MEMORY;
     int stop = 0;
 
@@ -51,12 +51,12 @@ memSlot *findMemSlot(int address) {
     return element;
 }
 
-void changeMemSlot(int address, char value) {
+void changeMemSlot(uint32_t address, int8_t value) {
     memSlot *element = findMemSlot(address);
     element->value = value;
 }
 
-void delMemSlot(int address) {
+void delMemSlot(uint32_t address) {
     memSlot *element = MEMORY, *prev = MEMORY;
     int stop = 0;
 
@@ -81,7 +81,7 @@ void emptyMemory() {
     }
 }
 
-uint8_t readMemory(uint32_t address) {
+int8_t readMemory(uint32_t address) {
     memSlot *element = findMemSlot(address);
 
     return element != NULL ? element->value : 0;
