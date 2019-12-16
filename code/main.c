@@ -3,6 +3,7 @@
 #include "functions.h"
 #include "files.h"
 #include "memory.h"
+#include "registers.h"
 
 int main(int argc, char *argv[]) {
 	FILE *sourceFile, *resultFile;
