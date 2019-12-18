@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "functions.h"
 #include "registers.h"
+#include "memory.h"
 
 #define ADRESS_ALIGNEMENT_MASK 0xfffffffc
 #define LOWER_64_MASK 0xffffffff
@@ -10,64 +11,69 @@
 /* GERER LA DIVISION PAR 0 */
 
 int mips_add(int arg1, int arg2, int arg3) {
-    int rs = arg2,
-        rt = arg3,
-        rd = arg1,
-        rsValue = readRegister(rs),
-        rtValue = readRegister(rt);
+    int8_t rs = arg2,
+           rt = arg3,
+           rd = arg1;
+    int32_t rsValue = readRegister(rs),
+            rtValue = readRegister(rt);
+
     writeRegister(rd, rsValue + rtValue);
     return getTypeRWord(0, rs, rt, rd, 0, 0x20);
 }
 
 int mips_addi(int arg1, int arg2, int arg3) {
-    int rs = arg2,
-        rt = arg1,
-        immediate = arg3,
-        rsValue = readRegister(rs);
-        writeRegister(rt, rsValue + immediate);
+    int8_t rs = arg2,
+           rt = arg1;
+    int16_t immediate = arg3;
+    int32_t rsValue = readRegister(rs);
+
+    writeRegister(rt, rsValue + immediate);
     return getTypeIWord(0x8, rs, rt, immediate);
 }
 
 int mips_and(int arg1, int arg2, int arg3) {
-    int rs = arg2,
-        rt = arg3,
-        rd = arg1,
-        rsValue = readRegister(rs),
-        rtValue = readRegister(rt);
+    int8_t rs = arg2,
+           rt = arg3,
+           rd = arg1;
+    int32_t rsValue = readRegister(rs),
+            rtValue = readRegister(rt);
+
     writeRegister(rd, rsValue & rtValue);
     return getTypeRWord(0, rs, rt, rd, 0, 0x24);
 }
 
 int mips_beq(int arg1, int arg2, int arg3) {
-    int rs = arg1,
-        rt = arg2,
-        offset = arg3<<2, /* Il faut décaler de 2 */
-        rsValue = readRegister(rs),
-        rtValue = readRegister(rt);
+    int8_t rs = arg1,
+           rt = arg2;
+    int16_t offset = arg3; 
+    int32_t rsValue = readRegister(rs),
+            rtValue = readRegister(rt);
 
         if(rsValue == rtValue) {
-            PC += offset;
+            PC += offset<<2; /* Il faut décaler de 2 */
         }
 
     return getTypeIWord(0x4, rs, rt, offset);
 }
 
 int mips_bgtz(int arg1, int arg2, int arg3) {
-    int rs = arg1,
-        offset = arg2<<2, /* Il faut décaler de 2 */
-        rsValue = readRegister(rs);
+    int8_t rs = arg1;
+    int16_t offset = arg2; 
+    int32_t rsValue = readRegister(rs);
 
         if(rsValue > 0) {
-            PC += offset;
+            PC += offset<<2; /* Il faut décaler de 2 */
         }
 
     return getTypeIWord(0x7, rs, 0, offset);
 }
 
+/* JEN ETAIS LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
+
 int mips_blez(int arg1, int arg2, int arg3) {
     int rs = arg1,
-        offset = arg2<<2, /* Il faut décaler de 2 */
-        rsValue = readRegister(rs);
+        offset = arg2<<2; /* Il faut décaler de 2 */
+    int32_t rsValue = readRegister(rs);
 
         if(rsValue <= 0) {
             PC += offset;
@@ -79,9 +85,9 @@ int mips_blez(int arg1, int arg2, int arg3) {
 int mips_bne(int arg1, int arg2, int arg3) {
     int rs = arg1,
         rt = arg2,
-        offset = arg3<<2, /* Il faut décaler de 2 */
-        rsValue = readRegister(rs),
-        rtValue = readRegister(rt);
+        offset = arg3<<2; /* Il faut décaler de 2 */
+    int32_t rsValue = readRegister(rs),
+            rtValue = readRegister(rt);
 
         if(rsValue != rtValue) {
             PC += offset;
@@ -92,11 +98,9 @@ int mips_bne(int arg1, int arg2, int arg3) {
 
 int mips_div(int arg1, int arg2, int arg3) {
     int rs = arg1,
-        rt = arg2,
-        rsValue = readRegister(rs),
-        rtValue = readRegister(rt),
-        q,
-        r;
+        rt = arg2;
+    int32_t rsValue = readRegister(rs),
+            rtValue = readRegister(rt);
 
     if(rtValue != 0){
         HI = rsValue/rtValue;
