@@ -3,6 +3,7 @@
 #include "registers.h"
 
 #define ADRESS_ALIGNEMENT_MASK 0xfffffffc
+#define LOWER_64_MASK 0xffffffff
 
 /* EXCEPTIONS A GERER (Trap) */
 /* REGISTRES SPECIAUX A IMPLEMENTER : PC HI LO */
@@ -45,7 +46,7 @@ int mips_beq(int arg1, int arg2, int arg3) {
         rtValue = readRegister(rt);
 
         if(rsValue == rtValue) {
-            printf("BRANCH TO PC + %d\n", offset);
+            PC += offset;
         }
 
     return getTypeIWord(0x4, rs, rt, offset);
@@ -57,7 +58,7 @@ int mips_bgtz(int arg1, int arg2, int arg3) {
         rsValue = readRegister(rs);
 
         if(rsValue > 0) {
-            printf("BRANCH TO PC + %d\n", offset);
+            PC += offset;
         }
 
     return getTypeIWord(0x7, rs, 0, offset);
@@ -69,7 +70,7 @@ int mips_blez(int arg1, int arg2, int arg3) {
         rsValue = readRegister(rs);
 
         if(rsValue <= 0) {
-            printf("BRANCH TO PC + %d\n", offset);
+            PC += offset;
         }
 
     return getTypeIWord(0x6, rs, 0, offset);
@@ -83,7 +84,7 @@ int mips_bne(int arg1, int arg2, int arg3) {
         rtValue = readRegister(rt);
 
         if(rsValue != rtValue) {
-            printf("BRANCH TO PC + %d\n", offset);
+            PC += offset;
         }
 
     return getTypeIWord(0x5, rs, rt, offset);
@@ -97,34 +98,29 @@ int mips_div(int arg1, int arg2, int arg3) {
         q,
         r;
 
-        if(rtValue != 0){
-            q = rsValue/rtValue;
-            r = rsValue%rtValue;
-        } else {
-            printf("ERREUR : DIVISION PAR 0\n");
-        }
-        
-
-        printf("A PLACER DANS HI : %d | A PLACER DANS LO : %d\n", q, r);
+    if(rtValue != 0){
+        HI = rsValue/rtValue;
+        LO = rsValue%rtValue;
+    } else {
+        printf("ERREUR : DIVISION PAR 0\n");
+    }
 
     return getTypeRWord(0, rs, rt, 0, 0, 0x1A);
 }
 
 int mips_j(int arg1, int arg2, int arg3) {
-    int instr_index = arg1;
-
-    /* Il faut décaler de 2 */
-    printf("JUMP TO %d\n", (instr_index << 2));
+    int instr_index = arg1 << 2; /* Il faut décaler de 2 */
+    
+    PC = instr_index << 2;
 
     return getTypeJWord(0x2, instr_index);
 }
 
 int mips_jal(int arg1, int arg2, int arg3) {
-    int instr_index = arg1,
+    int instr_index = arg1 << 2, /* Il faut décaler de 2 */
     returnAdressLink; /* = PC + 4*/
 
-    /* Il faut décaler de 2 */
-    printf("JUMP TO %d\n", (instr_index << 2));
+    PC = instr_index;
 
     writeRegister(31, returnAdressLink);
 
@@ -137,7 +133,7 @@ int mips_jr(int arg1, int arg2, int arg3) {
 
     rsValue = rsValue & ADRESS_ALIGNEMENT_MASK; /* On force les 2 LSB à 0 pour que l'adresse soit alignée */
     
-    printf("JUMP TO %d\n", rsValue);
+    PC = rsValue;
 
     // on considère le hint à 0 (comportement par défaut)
     return getTypeRWord(0, rs, 0, 0, 0, 0x8);
@@ -158,8 +154,10 @@ int mips_lw(int arg1, int arg2, int arg3) {
     int base = arg3,
         rt = arg1,
         offset = arg2,
-        registerValue = readRegister(base);
-        value = readMemory(registerValue + offset);
+        registerAddress = readRegister(base);
+        value = readMemory(registerAddress + offset);
+
+    /* IL FAUT CHECK L'ALIGNEMENT */
 
     writeRegister(rt, value);
 
@@ -169,7 +167,7 @@ int mips_lw(int arg1, int arg2, int arg3) {
 int mips_mfhi(int arg1, int arg2, int arg3) {
     int rd = arg1;
 
-    /* A FAIRE */
+    writeRegister(rd, HI);
 
     return getTypeRWord(0, 0, 0, rd, 0, 0x10);
 }
@@ -177,7 +175,7 @@ int mips_mfhi(int arg1, int arg2, int arg3) {
 int mips_mflo(int arg1, int arg2, int arg3) {
     int rd = arg1;
 
-    /* A FAIRE */
+    writeRegister(rd, LO);
 
     return getTypeRWord(0, 0, 0, rd, 0, 0x12);
 }
@@ -189,7 +187,8 @@ int mips_mult(int arg1, int arg2, int arg3) {
         rtValue = readRegister(rt),
         result = rsValue * rtValue;
 
-    printf("A PLACER DANS HI : %d | A PLACER DANS LO : %d\n", result>>16 , result); 
+    HI = result>>32;
+    LO = result & LOWER_64_MASK; 
 
     return getTypeRWord(0, rs, rt, 0, 0, 0x18);
 }
@@ -213,7 +212,10 @@ int mips_or(int arg1, int arg2, int arg3) {
 int mips_rotr(int arg1, int arg2, int arg3) {
     int rt = arg2,
         rd = arg1,
-        sa = arg3;
+        sa = arg3,
+        rtValue = readRegister(rt);
+
+    writeRegister(rd, (rtValue >> sa) + (rtValue << 32-sa));
 
     return getTypeRWord(0, 0x1, rt, rd, sa, 0x2);
 }
@@ -221,7 +223,10 @@ int mips_rotr(int arg1, int arg2, int arg3) {
 int mips_sll(int arg1, int arg2, int arg3) {
     int rt = arg2,
         rd = arg1,
-        sa = arg3;
+        sa = arg3,
+        rtValue = readRegister(rt);
+
+    writeRegister(rd, rtValue << sa);
 
     return getTypeRWord(0, 0, rt, rd, sa, 0x0);
 }
@@ -229,7 +234,11 @@ int mips_sll(int arg1, int arg2, int arg3) {
 int mips_slt(int arg1, int arg2, int arg3) {
     int rs = arg2,
         rt = arg3,
-        rd = arg1;
+        rd = arg1,
+        rsValue = readRegister(rs),
+        rtValue = readRegister(rt);
+
+    writeRegister(rd, rsValue < rtValue);
 
     return getTypeRWord(0, rs, rt, rd, 0, 0x2A);
 }
@@ -237,7 +246,10 @@ int mips_slt(int arg1, int arg2, int arg3) {
 int mips_srl(int arg1, int arg2, int arg3) {
     int rt = arg2,
         rd = arg1,
-        sa = arg3;
+        sa = arg3,
+        rtValue = readRegister(rt);
+
+    writeRegister(rd, rtValue >> sa)
 
     return getTypeRWord(0, 0, rt, rd, sa, 0x2);
 }
@@ -257,7 +269,13 @@ int mips_sub(int arg1, int arg2, int arg3) {
 int mips_sw(int arg1, int arg2, int arg3) {
     int base = arg3,
         rt = arg1,
-        offset = arg2;
+        offset = arg2,
+        registerAddress = readRegister(base),
+        rtValue = readRegister(rt);
+
+    /* IL FAUT CHECK L'ALIGNEMENT */
+
+    writeMemory(registerAddress + offset, rtValue);
 
     return getTypeIWord(0x2B, base, rt, offset);
 }
