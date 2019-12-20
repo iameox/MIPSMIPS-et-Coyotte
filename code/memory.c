@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include "memory.h"
 
-void addMemSlot(uint32_t address, int8_t value) {
-    memSlot *new = malloc(sizeof(memSlot)), *element = MEMORY, *prev = MEMORY;
+void addMemSlot(memslot **mem, uint32_t address, int8_t value) {
+    memSlot *new = malloc(sizeof(memSlot)), *element = *mem, *prev = *mem;
     int stop = 0;
 
     if (new == NULL) {
@@ -29,14 +29,14 @@ void addMemSlot(uint32_t address, int8_t value) {
         if (!stop) {
             new->next = NULL;
 
-            if (element == MEMORY) MEMORY = new;
+            if (element == *mem) *mem = new;
             else prev->next = new;
         }
     }
 }
 
-memSlot *findMemSlot(uint32_t address) {
-    memSlot *element = MEMORY;
+memSlot *findMemSlot(memslot **mem, uint32_t address) {
+    memSlot *element = *mem;
     int stop = 0;
 
     while (element != NULL && !stop) {
@@ -51,18 +51,18 @@ memSlot *findMemSlot(uint32_t address) {
     return element;
 }
 
-void changeMemSlot(uint32_t address, int8_t value) {
+void changeMemSlot(memslot **mem, uint32_t address, int8_t value) {
     memSlot *element = findMemSlot(address);
     element->value = value;
 }
 
 void delMemSlot(uint32_t address) {
-    memSlot *element = MEMORY, *prev = MEMORY;
+    memSlot *element = *mem, *prev = *mem;
     int stop = 0;
 
     while (element != NULL && !stop) {
         if (element->address == address) {
-            if (element == MEMORY) MEMORY = element->next;
+            if (element == *mem) *mem = element->next;
             else prev->next = element->next;
 
             free(element);
@@ -75,19 +75,19 @@ void delMemSlot(uint32_t address) {
     }
 }
 
-void emptyMemory() {
-    while (MEMORY != NULL) {
-        delMemSlot(MEMORY->address);
+void emptyMemory(memslot **mem) {
+    while (*mem != NULL) {
+        delMemSlot((*mem)->address);
     }
 }
 
-int8_t readMemory(uint32_t address) {
+int8_t readMemory(memslot **mem, uint32_t address) {
     memSlot *element = findMemSlot(address);
 
     return element != NULL ? element->value : 0;
 }
 
-void writeMemory(uint32_t address, int8_t value) {
+void writeMemory(memslot **mem, uint32_t address, int8_t value) {
     memSlot *element = findMemSlot(address);
 
     if (value == 0) delMemSlot(address);
@@ -95,8 +95,8 @@ void writeMemory(uint32_t address, int8_t value) {
     else changeMemSlot(address, value);
 }
 
-void printMemory(void) {
-    memSlot *element = MEMORY;
+void printMemory(memslot **mem) {
+    memSlot *element = *mem;
 
     if (element == NULL) {
         printf("La mémoire est vide.\n");

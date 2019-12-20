@@ -7,9 +7,10 @@ typedef struct memSlot {
 	struct memSlot *next;
 } memSlot;
 
-memSlot *MEMORY;
+memSlot *DATA_MEMORY;
+memSlot *PROG_MEMORY;
 
-void emptyMemory();
-int8_t readMemory(uint32_t address);
-void writeMemory(uint32_t address, int8_t value);
-void printMemory(void);
+void emptyMemory(memSlot **mem);
+int8_t readMemory(memSlot **mem, uint32_t address);
+void writeMemory(memSlot **mem, uint32_t address, int8_t value);
+void printMemory(memSlot **mem);
