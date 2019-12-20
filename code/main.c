@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
 		sourceFile = openFile(sourceName, "rb");
 		resultFile = openFile(resultName, "wb");
 
+		/* LECTURE DE L'ASSEMBLEUR ET ECRITURE DU CODE MACHINE */
 		while (!feof(sourceFile)) {
 			lineSize = readLine(sourceFile, sourceLine);
 
@@ -38,10 +39,14 @@ int main(int argc, char *argv[]) {
 				}
 			}
 		}
-	}
 
-	closeFile(sourceName, sourceFile);
-	closeFile(resultName, resultFile);
+		closeFile(sourceName, sourceFile);
+		closeFile(resultName, resultFile);
+
+		printf("EXECUTION DU PROGRAMME\n");
+		executeProgram();
+
+	}
 
     return 1;
 }

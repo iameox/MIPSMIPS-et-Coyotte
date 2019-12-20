@@ -4,6 +4,7 @@
 #include "functions.h"
 #include "files.h"
 #include "translation.h"
+#include "instructions.h"
 #include "memory.h"
 #include "registers.h"
 
@@ -188,6 +189,7 @@ int mapInstruction(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
 
             result = (functions[i])(arg1, arg2, arg3); /* Exécute la fonction correspondant au nom */
             sprintf(hex, "%.8x", result); /* Écrit le résultat de la traduction en hexadécimal */
+            writeMemory(&PROG_MEMORY, PC + 4*i, result); /* Ecrit dans la mémoire de programme */
         }
 
         i++;
@@ -203,21 +205,52 @@ int executeProgram(void) {
     int32_t instruction = readMemory(&PROG_MEMORY, PC);
     int8_t special, function;
     memSlot * check = findMemSlot(&PROG_MEMORY, PC);
-    int success = 1;
+    int success = 1, rBit, i, found = 0;
+    int specialsCode[] = INS_SPECIAL, functionsCode[] = INS_FUNCTION;
+    int (*functionsSpecials[])(int32_t) = INS_SPECIAL_POINTERS;
+    int (*functionsFunctions[])(int32_t) = INS_FUNCTION_POINTERS;
 
     while (check != NULL) {
-        instruction = readMemory(&PROG_MEMORY, PC);
+        instruction = readMemory(&PROG_MEMORY, PC); /* Lecture de l'instruction */
         special = instruction & INS_SPECIAL_MASK;
         function = instruction & INS_FUNCTION_MASK;
 
         if(special != 0) {
             printf("INS_SPECIAL\n"); 
+            found = 0;
+            i = 0;
+            while (i < INS_SPECIAL_NUMBER && !found) { /* Parcourt les noms d'instruction disponibles pour trouver une correspondance */
+                if (special == specialsCode[i]) {
+                    found = 1;
+                    (functionsSpecials[i])(instruction); /* Exécute la fonction correspondant au nom */
+                }
+                i++;
+            }
         } else if(function == 2) {
-            printf("regarder le bit R : 1 => ROTR, SRR sinon\n");
+            rBit = instruction & INS_R_MASK;
+            if(rBit) {
+                printf("ROTR\n");
+                exec_rotr(instruction);
+            } else {
+                printf("SRR\n");
+                exec_srl(instruction);
+            }
         } else {
             printf("INS_FUNCTION\n");
+            found = 0;
+            i = 0;
+            while (i < INS_FUNCTION_NUMBER && !found) { /* Parcourt les noms d'instruction disponibles pour trouver une correspondance */
+                if (special == functionsCode[i]) {
+                    found = 1;
+                    (functionsFunctions[i])(instruction); /* Exécute la fonction correspondant au nom */
+                }
+                i++;
+            }
+            if(!found) {
+                printf("INSTRUCTION NOT FOUND\n");
+                success = 0;
+            }
         }
-            
 
         PC += 4;
         check = findMemSlot(&PROG_MEMORY, PC);
