@@ -1,0 +1,34 @@
+#include <stdint.h>
+
+#define INS_SPECIAL {0x8, 0x4, 0x7, 0x6, 0x5, 0x1A, 0x2, 0x3, 0xF, 0x23, 0x2B}
+#define INS_SPECIAL_POINTERS {&exec_addi, &exec_beq, &exec_bgtz, &exec_blez, &exec_bne, &exec_j, &exec_jal, &exec_jr, &exec_lui, &exec_lw, &exec_sw}
+#define INS_SPECIAL_NUMBER 11
+
+#define INS_FUNCTION {0x20, 0x24, 0x8, 0x10, 0x12, 0x18, 0, 0x25, 0, 0x2A, 0x22, 0x26}
+#define INS_FUNCTION_POINTERS {&exec_add, &exec_and, &exec_div, &exec_mfhi, &exec_mflo, &exec_mult, &exec_sll, &exec_or, &exec_sll, &exec_slt, &exec_sub, &exec_xor}
+#define INS_FUNCTION_NUMBER 10
+
+int exec_add(int32_t code);
+int exec_addi(int32_t code);
+int exec_and(int32_t code);
+int exec_beq(int32_t code);
+int exec_bgtz(int32_t code);
+int exec_blez(int32_t code);
+int exec_bne(int32_t code);
+int exec_div(int32_t code);
+int exec_j(int32_t code);
+int exec_jal(int32_t code);
+int exec_jr(int32_t code);
+int exec_lui(int32_t code);
+int exec_lw(int32_t code);
+int exec_mfhi(int32_t code);
+int exec_mflo(int32_t code);
+int exec_mult(int32_t code);
+int exec_or(int32_t code);
+int exec_rotr(int32_t code);
+int exec_sll(int32_t code);
+int exec_slt(int32_t code);
+int exec_srl(int32_t code);
+int exec_sub(int32_t code);
+int exec_sw(int32_t code);
+int exec_xor(int32_t code);
