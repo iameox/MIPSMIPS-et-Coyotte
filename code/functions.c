@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include "functions.h"
 #include "files.h"
-#include "instructions.h"
+#include "translation.h"
 
 /* Retourne le nombre de caractères comptés jusqu'au dernier délimiteur trouvé inclus */
 int wordIndex(char *ins, int n, char *delimiters) {
