@@ -167,6 +167,17 @@ int getTypeJWord(int opcode, int target) {
     return getWord(args, size, 2);
 }
 
+/* Génère un mot machine de 32 bits sous forme de nombre */
+int getArgs(int * args, int * size, int n) {
+    int result = 0, i;
+
+    for (i = 0; i < n; i++) { /* Parcourt chaque champ donné, décale la valeur actuelle du mot vers la gauche et ajoute la valeur du champ */
+        result = (result << size[i]) + args[i];
+    }
+
+    return result;
+}
+
 /* Détermine le code machine d'une instruction assembleur et l'écrit en hexadécimal dans la chaîne hex
    Retourne 1 si l'instruction existe et doit être écrite, 0 si elle n'existe pas */
 int mapInstruction(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
