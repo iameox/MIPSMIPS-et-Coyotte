@@ -154,10 +154,10 @@ int translate_lui(int arg1, int arg2, int arg3) {
 
 int translate_lw(int arg1, int arg2, int arg3) {
     int8_t base = arg3,
-        rt = arg1;
+           rt = arg1;
     int16_t offset = arg2;
     int32_t registerAddress = readRegister(base);
-    int8_t value = readMemory(registerAddress + offset);
+    int8_t value = readMemory(&DATA_MEMORY, registerAddress + offset);
 
     /* IL FAUT CHECK L'ALIGNEMENT */
 
@@ -193,10 +193,6 @@ int translate_mult(int arg1, int arg2, int arg3) {
     LO = result & LOWER_64_MASK; 
 
     return getTypeRWord(0, rs, rt, 0, 0, 0x18);
-}
-
-int translate_nop(int arg1, int arg2, int arg3) {
-    return getTypeRWord(0, 0, 0, 0, 0, 0);
 }
 
 int translate_or(int arg1, int arg2, int arg3) {
@@ -277,7 +273,7 @@ int translate_sw(int arg1, int arg2, int arg3) {
 
     /* IL FAUT CHECK L'ALIGNEMENT */
 
-    writeMemory(registerAddress + offset, rtValue);
+    writeMemory(&DATA_MEMORY, registerAddress + offset, rtValue);
 
     return getTypeIWord(0x2B, base, rt, offset);
 }

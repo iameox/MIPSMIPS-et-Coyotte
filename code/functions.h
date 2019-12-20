@@ -1,6 +1,8 @@
 #define SIZE 8
 #define ASCII_TO_HEX_OFFSET 87
 #define ASCII_TO_DEC_OFFSET 48
+#define INS_SPECIAL_MASK 0xfc000000
+#define INS_FUNCTION_MASK 0x0000003f
 
 int MIPStoHex(char *ins, int n, char hex[SIZE]);
 

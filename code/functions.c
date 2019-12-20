@@ -4,6 +4,8 @@
 #include "functions.h"
 #include "files.h"
 #include "translation.h"
+#include "memory.h"
+#include "registers.h"
 
 /* Retourne le nombre de caractères comptés jusqu'au dernier délimiteur trouvé inclus */
 int wordIndex(char *ins, int n, char *delimiters) {
@@ -167,17 +169,6 @@ int getTypeJWord(int opcode, int target) {
     return getWord(args, size, 2);
 }
 
-/* Génère un mot machine de 32 bits sous forme de nombre */
-int getArgs(int * args, int * size, int n) {
-    int result = 0, i;
-
-    for (i = 0; i < n; i++) { /* Parcourt chaque champ donné, décale la valeur actuelle du mot vers la gauche et ajoute la valeur du champ */
-        result = (result << size[i]) + args[i];
-    }
-
-    return result;
-}
-
 /* Détermine le code machine d'une instruction assembleur et l'écrit en hexadécimal dans la chaîne hex
    Retourne 1 si l'instruction existe et doit être écrite, 0 si elle n'existe pas */
 int mapInstruction(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
@@ -204,6 +195,37 @@ int mapInstruction(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
 
     return write;
 }
+
+
+/* Execute le code 
+Retourne 1 en cas de succès, 0 si une erreur */
+int executeProgram(void) {
+    int32_t instruction = readMemory(&PROG_MEMORY, PC);
+    int8_t special, function;
+    memSlot * check = findMemSlot(&PROG_MEMORY, PC);
+    int success = 1;
+
+    while (check != NULL) {
+        instruction = readMemory(&PROG_MEMORY, PC);
+        special = instruction & INS_SPECIAL_MASK;
+        function = instruction & INS_FUNCTION_MASK;
+
+        if(special != 0) {
+            printf("INS_SPECIAL\n"); 
+        } else if(function == 2) {
+            printf("regarder le bit R : 1 => ROTR, SRR sinon\n");
+        } else {
+            printf("INS_FUNCTION\n");
+        }
+            
+
+        PC += 4;
+        check = findMemSlot(&PROG_MEMORY, PC);
+    }
+
+    return success;
+}
+
 
 /* Convertit une ligne assembleur en hexadécimal et l'écrit dans la chaîne hex
    Retourne 1 si l'instruction existe, 0 sinon */
