@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdint.h>
 #include "functions.h"
 #include "files.h"
 #include "translation.h"
@@ -168,6 +169,26 @@ int getTypeJWord(int opcode, int target) {
     int size[] = {6, 26};
 
     return getWord(args, size, 2);
+}
+
+/* Récupère les arguments d'une instruction de type R */
+void getTypeRArgs(int32_t code, int8_t *rs, int8_t *rt; int8_t *rd, int8_t *sa) {
+    *rs = (code & 0x3E00000) >> 21;
+    *rt = (code & 0x1F0000) >> 16;
+    *rd = (code & 0xF800) >> 11;
+    *sa = (code & 0x7C0) >> 6;
+}
+
+/* Récupère les arguments d'une instruction de type I */
+void getTypeIArgs(int32_t code, int8_t *rs, int8_t *rt; int16_t *immediate) {
+    *rs = (code & 0x3E00000) >> 21;
+    *rt = (code & 0x1F0000) >> 16;
+    *immediate = code & 0xFFFF;
+}
+
+/* Récupère les arguments d'une instruction de type J */
+void getTypeJArgs(int32_t code, int32_t *instr_index) {
+    *instr_index = code & 0x3FFFFFF;
 }
 
 /* Détermine le code machine d'une instruction assembleur et l'écrit en hexadécimal dans la chaîne hex
