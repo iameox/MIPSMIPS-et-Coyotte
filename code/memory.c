@@ -87,7 +87,7 @@ int8_t readByte(memSlot **mem, uint32_t address) {
     return element != NULL ? element->value : 0;
 }
 
-void readMemory(memSlot **mem, uint32_t address) {
+int32_t readMemory(memSlot **mem, uint32_t address) {
     int i;
 
     for (i = 0; i < 4; i++) {
