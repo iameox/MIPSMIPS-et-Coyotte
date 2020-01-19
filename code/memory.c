@@ -81,10 +81,19 @@ void emptyMemory(memSlot **mem) {
     }
 }
 
-int8_t readMemory(memSlot **mem, uint32_t address) {
+int8_t readByte(memSlot **mem, uint32_t address) {
     memSlot *element = findMemSlot(mem, address);
 
     return element != NULL ? element->value : 0;
+}
+
+void readMemory(memSlot **mem, uint32_t address) {
+    int i;
+
+    for (i = 0; i < 4; i++) {
+        readByte(mem, address);
+        address++;
+    }
 }
 
 void writeByte(memSlot **mem, uint32_t address, int8_t value) {
@@ -114,7 +123,7 @@ void printMemory(memSlot **mem) {
         printf("========== Memory Dump ===========\n");
 
         while (element != NULL) {
-            printf("@%08X : %u\n", element->address, element->value);
+            printf("@%08X : %d\n", element->address, element->value);
             element = element->next;
         }
     
