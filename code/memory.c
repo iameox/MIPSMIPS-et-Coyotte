@@ -88,12 +88,15 @@ int8_t readByte(memSlot **mem, uint32_t address) {
 }
 
 int32_t readMemory(memSlot **mem, uint32_t address) {
+    int32_t result = 0;
     int i;
 
     for (i = 0; i < 4; i++) {
-        readByte(mem, address);
+        result += readByte(mem, address) << (8 * i);
         address++;
     }
+
+    return result;
 }
 
 void writeByte(memSlot **mem, uint32_t address, int8_t value) {
