@@ -112,7 +112,7 @@ void writeMemory(memSlot **mem, uint32_t address, int32_t value) {
 
     for (i = 0; i < 4; i++) {
         writeByte(mem, address, value);
-        value <<= 8;
+        value >>= 8;
     }
 }
 
