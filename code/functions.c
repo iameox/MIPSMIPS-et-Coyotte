@@ -172,7 +172,7 @@ int getTypeJWord(int opcode, int target) {
 }
 
 /* Récupère les arguments d'une instruction de type R */
-void getTypeRArgs(int32_t code, int8_t *rs, int8_t *rt; int8_t *rd, int8_t *sa) {
+void getTypeRArgs(int32_t code, int8_t *rs, int8_t *rt, int8_t *rd, int8_t *sa) {
     *rs = (code & 0x3E00000) >> 21;
     *rt = (code & 0x1F0000) >> 16;
     *rd = (code & 0xF800) >> 11;
@@ -180,7 +180,7 @@ void getTypeRArgs(int32_t code, int8_t *rs, int8_t *rt; int8_t *rd, int8_t *sa) 
 }
 
 /* Récupère les arguments d'une instruction de type I */
-void getTypeIArgs(int32_t code, int8_t *rs, int8_t *rt; int16_t *immediate) {
+void getTypeIArgs(int32_t code, int8_t *rs, int8_t *rt, int16_t *immediate) {
     *rs = (code & 0x3E00000) >> 21;
     *rt = (code & 0x1F0000) >> 16;
     *immediate = code & 0xFFFF;

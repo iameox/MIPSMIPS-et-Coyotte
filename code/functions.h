@@ -13,6 +13,6 @@ int getTypeRWord(int opcode, int rs, int rt, int rd, int sa, int function);
 int getTypeIWord(int opcode, int rs, int rt, int immediate);
 int getTypeJWord(int opcode, int target);
 
-void getTypeRArgs(int32_t code, int8_t args[4]);
-void getTypeIArgs(int32_t code, int8_t args[4]);
-void getTypeJArgs(int32_t code, int8_t args[4]);
+void getTypeRArgs(int32_t code, int8_t *rs, int8_t *rt, int8_t *rd, int8_t *sa);
+void getTypeIArgs(int32_t code, int8_t *rs, int8_t *rt, int16_t *immediate);
+void getTypeJArgs(int32_t code, int32_t *instr_index);
