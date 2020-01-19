@@ -111,7 +111,7 @@ void writeMemory(memSlot **mem, uint32_t address, int32_t value) {
     int i;
 
     for (i = 0; i < 4; i++) {
-        writeByte(mem, address, value);
+        writeByte(mem, address + i, value);
         value >>= 8;
     }
 }
