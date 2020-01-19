@@ -26,7 +26,6 @@ void exec_addi(int32_t code) {
     int16_t immediate;
     getTypeIArgs(code, &rs, &rt, &immediate);
 
-    int16_t immediate = arg3;
     int32_t rsValue = readRegister(rs);
 
     writeRegister(rt, rsValue + immediate);
@@ -115,7 +114,7 @@ void exec_j(int32_t code) {
 }
 
 void exec_jal(int32_t code) {
-    int32_t intr_index;
+    int32_t instr_index;
     getTypeJArgs(code, &instr_index);
 
     int32_t returnAdressLink = PC + 4;
@@ -230,7 +229,7 @@ void exec_srl(int32_t code) {
 }
 
 void exec_sub(int32_t code) {
-    int8_t int8_t rs, rt, rd, sa;
+    int8_t rs, rt, rd, sa;
     getTypeRArgs(code, &rs, &rt, &rd, &sa);
 
     int32_t rsValue = readRegister(rs),
