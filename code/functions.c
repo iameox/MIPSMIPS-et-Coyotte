@@ -202,7 +202,7 @@ int mapInstruction(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
 
     int (*functions[])(int, int, int) = INS_POINTERS;
     int i = 0, write = 0;
-    int result;
+    int32_t result;
 
     while (i < INS_NUMBER && !write) { /* Parcourt les noms d'instruction disponibles pour trouver une correspondance */
         if (!strncmp(name, names[i], lengths[0])) {
@@ -210,7 +210,10 @@ int mapInstruction(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
 
             result = (functions[i])(arg1, arg2, arg3); /* Exécute la fonction correspondant au nom */
             sprintf(hex, "%.8x", result); /* Écrit le résultat de la traduction en hexadécimal */
-            writeMemory(&PROG_MEMORY, PC + 4*i, result); /* Ecrit dans la mémoire de programme */
+            printf("PC = %d\n", PC);
+            writeMemory(&PROG_MEMORY, PC, result); /* Ecrit dans la mémoire de programme */
+            printMemory(&PROG_MEMORY);
+            PC += 4;
         }
 
         i++;
@@ -220,22 +223,34 @@ int mapInstruction(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
 }
 
 
+void initProcessor(void) {
+    PC = 0;
+    PROG_MEMORY = NULL;
+    DATA_MEMORY = NULL;
+}
+
 /* Execute le code 
 Retourne 1 en cas de succès, 0 si une erreur */
 int executeProgram(void) {
+    PC = 0;
     int32_t instruction = readMemory(&PROG_MEMORY, PC);
     int8_t special, function;
-    memSlot * check = findMemSlot(&PROG_MEMORY, PC);
+    int check = (findMemSlot(&PROG_MEMORY, PC) != NULL) || (findMemSlot(&PROG_MEMORY, PC+1) != NULL) || (findMemSlot(&PROG_MEMORY, PC+2) != NULL);
     int success = 1, rBit, i, found = 0;
     int specialsCode[] = INS_SPECIAL, functionsCode[] = INS_FUNCTION;
-    int (*functionsSpecials[])(int32_t) = INS_SPECIAL_POINTERS;
-    int (*functionsFunctions[])(int32_t) = INS_FUNCTION_POINTERS;
+    void (*functionsSpecials[])(int32_t) = INS_SPECIAL_POINTERS;
+    void (*functionsFunctions[])(int32_t) = INS_FUNCTION_POINTERS;
 
-    while (check != NULL) {
+    printMemory(&PROG_MEMORY);
+
+    printf("début de la boucle, %d\n",check);
+    while (check) {
+        printf("on est dans la boucle\n");
         instruction = readMemory(&PROG_MEMORY, PC); /* Lecture de l'instruction */
-        special = instruction & INS_SPECIAL_MASK;
+        special = (instruction & INS_SPECIAL_MASK)>>26;
         function = instruction & INS_FUNCTION_MASK;
-
+        printf("INSTRUCTION = %x\n", instruction);
+        printf("SPECIAL = %x\n", special);
         if(special != 0) {
             printf("INS_SPECIAL\n"); 
             found = 0;
@@ -261,7 +276,7 @@ int executeProgram(void) {
             found = 0;
             i = 0;
             while (i < INS_FUNCTION_NUMBER && !found) { /* Parcourt les noms d'instruction disponibles pour trouver une correspondance */
-                if (special == functionsCode[i]) {
+                if (function == functionsCode[i]) {
                     found = 1;
                     (functionsFunctions[i])(instruction); /* Exécute la fonction correspondant au nom */
                 }
@@ -273,10 +288,12 @@ int executeProgram(void) {
             }
         }
 
+        printMemory(&DATA_MEMORY);
+        printRegisters();
         PC += 4;
-        check = findMemSlot(&PROG_MEMORY, PC);
+        check = (findMemSlot(&PROG_MEMORY, PC) != NULL) || (findMemSlot(&PROG_MEMORY, PC+1) != NULL) || (findMemSlot(&PROG_MEMORY, PC+2) != NULL);
     }
-
+    printf("On a fini la boucle\n");
     return success;
 }
 

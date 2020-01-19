@@ -2,8 +2,6 @@
 #include <string.h>
 #include "functions.h"
 #include "files.h"
-#include "memory.h"
-#include "registers.h"
 
 int main(int argc, char *argv[]) {
 	FILE *sourceFile, *resultFile;
@@ -27,6 +25,7 @@ int main(int argc, char *argv[]) {
 		sourceFile = openFile(sourceName, "rb");
 		resultFile = openFile(resultName, "wb");
 
+		initProcessor();
 		/* LECTURE DE L'ASSEMBLEUR ET ECRITURE DU CODE MACHINE */
 		while (!feof(sourceFile)) {
 			lineSize = readLine(sourceFile, sourceLine);
