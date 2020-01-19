@@ -130,8 +130,6 @@ int translate_or(int arg1, int arg2, int arg3) {
            rt = arg3,
            rd = arg1;
 
-    writeRegister(rd, rsValue | rtValue);
-
     return getTypeRWord(0, rs, rt, rd, 0, 0x25);
 }
 
