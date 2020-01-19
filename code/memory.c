@@ -87,12 +87,21 @@ int8_t readMemory(memSlot **mem, uint32_t address) {
     return element != NULL ? element->value : 0;
 }
 
-void writeMemory(memSlot **mem, uint32_t address, int8_t value) {
+void writeByte(memSlot **mem, uint32_t address, int8_t value) {
     memSlot *element = findMemSlot(mem, address);
 
     if (value == 0) delMemSlot(mem, address);
     else if (element == NULL) addMemSlot(mem, address, value);
     else changeMemSlot(mem, address, value);
+}
+
+void writeMemory(memSlot **mem, uint32_t address, int32_t value) {
+    int i;
+
+    for (i = 0; i < 4; i++) {
+        writeByte(mem, address, value);
+        value <<= 4;
+    }
 }
 
 void printMemory(memSlot **mem) {

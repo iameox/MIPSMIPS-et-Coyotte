@@ -13,5 +13,5 @@ memSlot *PROG_MEMORY;
 void emptyMemory(memSlot **mem);
 memSlot *findMemSlot(memSlot **mem, uint32_t address);
 int8_t readMemory(memSlot **mem, uint32_t address);
-void writeMemory(memSlot **mem, uint32_t address, int8_t value);
+void writeMemory(memSlot **mem, uint32_t address, int32_t value);
 void printMemory(memSlot **mem);
