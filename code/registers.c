@@ -13,7 +13,7 @@ void initRegisters(void) {
 
 
 /* Retourne la valeur d'un registre d'index donné. Si l'index est invalide, la valeur -1 est retournée. */
-int32_t readRegister(int index) {
+int32_t readRegister(int8_t index) {
 	int32_t registerValue = -1;
 
 	if(index > 31 || index < 0) {
@@ -29,7 +29,7 @@ int32_t readRegister(int index) {
 /* Ecrit dans un registre d'index donné une valeur d'entrée. 
 Si l'index est invalide ou si on essaie d'écrire dans un registre réservé, la valeur 0 est retournée. 
 En cas de succès, la valeur 1 est retournée. */
-int writeRegister(int index, int32_t value) {
+int writeRegister(int8_t index, int32_t value) {
 	int success = 0;
 
 	if(index > 31 || index < 0) {

@@ -12,7 +12,6 @@
 /* GERER LA DIVISION PAR 0 */
 
 void exec_add(int32_t code) {
-    printf("C 1 ADD CONNARD\n");
     int8_t rs, rt, rd, sa;
     getTypeRArgs(code, &rs, &rt, &rd, &sa);
 
@@ -23,13 +22,14 @@ void exec_add(int32_t code) {
 }
 
 void exec_addi(int32_t code) {
-    printf("C 1 ADDI\n");
     int8_t rs, rt;
     int16_t immediate;
     getTypeIArgs(code, &rs, &rt, &immediate);
 
     int32_t rsValue = readRegister(rs);
-    printf("rs = %d rt = %d imm = %d\n", rs, rt, immediate);
+
+    printf("ADDI %d %d %d\n", rs, rt, immediate);
+
     writeRegister(rt, rsValue + immediate);
 }
 
@@ -84,9 +84,9 @@ void exec_bne(int32_t code) {
     int8_t rs, rt;
     int16_t offset;
     getTypeIArgs(code, &rs, &rt, &offset);
-
     int32_t rsValue = readRegister(rs),
             rtValue = readRegister(rt);
+
 
     if (rsValue != rtValue) {
         PC += offset << 2; /* Il faut décaler de 2 */

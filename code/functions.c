@@ -136,12 +136,23 @@ int convertArgument(char * argStr, int size) {
     return operandValue;
 }
 
+int mask(int n) {
+    int result = 0, i;
+
+    for (i = 0; i < n; i++) {
+        result <<= 1;
+        result += 1;
+    }
+
+    return result;
+}
+
 /* Génère un mot machine de 32 bits sous forme de nombre */
 int getWord(int * args, int * size, int n) {
     int result = 0, i;
 
     for (i = 0; i < n; i++) { /* Parcourt chaque champ donné, décale la valeur actuelle du mot vers la gauche et ajoute la valeur du champ */
-        result = (result << size[i]) + args[i];
+        result = (result << size[i]) + (args[i] & mask(size[i]));
     }
 
     return result;
@@ -210,9 +221,7 @@ int mapInstruction(char *ins, int indexes[4], int lengths[4], char hex[SIZE]) {
 
             result = (functions[i])(arg1, arg2, arg3); /* Exécute la fonction correspondant au nom */
             sprintf(hex, "%.8x", result); /* Écrit le résultat de la traduction en hexadécimal */
-            printf("PC = %d\n", PC);
             writeMemory(&PROG_MEMORY, PC, result); /* Ecrit dans la mémoire de programme */
-            printMemory(&PROG_MEMORY);
             PC += 4;
         }
 
@@ -242,15 +251,12 @@ int executeProgram(void) {
     void (*functionsFunctions[])(int32_t) = INS_FUNCTION_POINTERS;
 
     printMemory(&PROG_MEMORY);
-
-    printf("début de la boucle, %d\n",check);
+    printf("Début de l'exécution\n");
     while (check) {
-        printf("on est dans la boucle\n");
         instruction = readMemory(&PROG_MEMORY, PC); /* Lecture de l'instruction */
         special = (instruction & INS_SPECIAL_MASK)>>26;
         function = instruction & INS_FUNCTION_MASK;
         printf("INSTRUCTION = %x\n", instruction);
-        printf("SPECIAL = %x\n", special);
         if(special != 0) {
             printf("INS_SPECIAL\n"); 
             found = 0;
@@ -293,7 +299,7 @@ int executeProgram(void) {
         PC += 4;
         check = (findMemSlot(&PROG_MEMORY, PC) != NULL) || (findMemSlot(&PROG_MEMORY, PC+1) != NULL) || (findMemSlot(&PROG_MEMORY, PC+2) != NULL);
     }
-    printf("On a fini la boucle\n");
+    printf("== FIN ==\n");
     return success;
 }
 

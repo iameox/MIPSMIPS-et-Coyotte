@@ -93,7 +93,6 @@ int32_t readMemory(memSlot **mem, uint32_t address) {
 
     for (i = 0; i < 4; i++) {
         result += (readByte(mem, address) & 0xff) << (8 * i);
-        printf("%x\n", result);
         address++;
     }
 
