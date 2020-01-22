@@ -7,7 +7,7 @@
 #define INS_FUNCTION_MASK 0x0000003f
 #define INS_R_MASK 0x00200000
 
-int MIPStoHex(char *ins, int n, char hex[SIZE]);
+int32_t MIPStoHex(char *ins, int n);
 
 int getTypeRWord(int opcode, int rs, int rt, int rd, int sa, int function);
 int getTypeIWord(int opcode, int rs, int rt, int immediate);
@@ -18,4 +18,5 @@ void getTypeIArgs(int32_t code, int8_t *rs, int8_t *rt, int16_t *immediate);
 void getTypeJArgs(int32_t code, int32_t *instr_index);
 
 void initProcessor(void);
+int executeLine(int32_t instruction);
 int executeProgram(void);
