@@ -7,6 +7,8 @@
 #define ADRESS_ALIGNEMENT_MASK 0xfffffffc
 #define LOWER_64_MASK 0xffffffff
 
+/* Ce fichier reprend simplement les algorithmes donnés en annexe */
+
 void exec_add(int32_t code) {
     int8_t rs, rt, rd, sa;
     int32_t rsValue, rtValue;
