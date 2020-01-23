@@ -136,6 +136,7 @@ int convertArgument(char * argStr, int size) {
     return operandValue;
 }
 
+/* Retourne un masque tel que les n bits de poids faible sont à 1 et les suivants à 0.*/
 int mask(int n) {
     int result = 0, i;
 
@@ -184,22 +185,22 @@ int getTypeJWord(int opcode, int target) {
 
 /* Récupère les arguments d'une instruction de type R */
 void getTypeRArgs(int32_t code, int8_t *rs, int8_t *rt, int8_t *rd, int8_t *sa) {
-    *rs = (code & 0x3E00000) >> 21;
-    *rt = (code & 0x1F0000) >> 16;
-    *rd = (code & 0xF800) >> 11;
-    *sa = (code & 0x7C0) >> 6;
+    *rs = (code & INS_ARG_1_MASK) >> 21;
+    *rt = (code & INS_ARG_2_MASK) >> 16;
+    *rd = (code & INS_ARG_3_MASK) >> 11;
+    *sa = (code & INS_ARG_4_MASK) >> 6;
 }
 
 /* Récupère les arguments d'une instruction de type I */
 void getTypeIArgs(int32_t code, int8_t *rs, int8_t *rt, int16_t *immediate) {
-    *rs = (code & 0x3E00000) >> 21;
-    *rt = (code & 0x1F0000) >> 16;
-    *immediate = code & 0xFFFF;
+    *rs = (code & INS_ARG_1_MASK) >> 21;
+    *rt = (code & INS_ARG_2_MASK) >> 16;
+    *immediate = code & INS_IMMEDIATE_MASK;
 }
 
 /* Récupère les arguments d'une instruction de type J */
 void getTypeJArgs(int32_t code, int32_t *instr_index) {
-    *instr_index = code & 0x3FFFFFF;
+    *instr_index = code & INS_INDEX_MASK;
 }
 
 /* Détermine le code machine d'une instruction assembleur et l'écrit en hexadécimal dans la chaîne hex
@@ -213,12 +214,11 @@ int mapInstruction(char *ins, int indexes[4], int lengths[4]) {
 
     int (*functions[])(int, int, int) = INS_POINTERS;
     int i = 0;
-    int32_t result = 0xffffffff;
+    int32_t result = NO_INS;
 
-    while (i < INS_NUMBER && result == 0xffffffff) { /* Parcourt les noms d'instruction disponibles pour trouver une correspondance */
+    while (i < INS_NUMBER && result == NO_INS) { /* Parcourt les noms d'instruction disponibles pour trouver une correspondance */
         if (!strncmp(name, names[i], lengths[0])) {
             result = (functions[i])(arg1, arg2, arg3); /* Exécute la fonction correspondant au nom */
-            PC += 4;
         }
 
         i++;
@@ -227,84 +227,107 @@ int mapInstruction(char *ins, int indexes[4], int lengths[4]) {
     return result;
 }
 
-
+/* Initialise les registres et les mémoires du processeur.
+   Les mémoires sont considérés physiquement séparées. */
 void initProcessor(void) {
     PC = 0;
+    HI = 0;
+    LO = 0;
+
     PROG_MEMORY = NULL;
     DATA_MEMORY = NULL;
 }
 
+/* Affiche le statut des mémoires de programme et de données, ainsi que les registres. */
+void printStatus(void) {
+    printMemory(&PROG_MEMORY, 0);
+    printMemory(&DATA_MEMORY, 1);
+    printRegisters();
+}
 
-int executeLine(int32_t instruction) {
+int executeLine(int32_t instruction, int interactive) {
     int success = 1, rBit, i, found = 0;
     int specialsCode[] = INS_SPECIAL, functionsCode[] = INS_FUNCTION;
-    void (*functionsSpecials[])(int32_t) = INS_SPECIAL_POINTERS;
-    void (*functionsFunctions[])(int32_t) = INS_FUNCTION_POINTERS;
+    void (*functionsSpecials[])(int32_t, int) = INS_SPECIAL_POINTERS;
+    void (*functionsFunctions[])(int32_t, int) = INS_FUNCTION_POINTERS;
     int8_t special = (instruction & INS_SPECIAL_MASK)>>26;
     int8_t function = instruction & INS_FUNCTION_MASK;
 
-    printf("INSTRUCTION = %x\n", instruction);
-    if(special != 0) {
-        printf("INS_SPECIAL\n"); 
+    if (special != 0) { /* Instruction étant repérée par son champ "special" (Type I et J) */
         found = 0;
         i = 0;
+
         while (i < INS_SPECIAL_NUMBER && !found) { /* Parcourt les noms d'instruction disponibles pour trouver une correspondance */
             if (special == specialsCode[i]) {
                 found = 1;
-                (functionsSpecials[i])(instruction); /* Exécute la fonction correspondant au nom */
+                (functionsSpecials[i])(instruction, interactive); /* Exécute la fonction correspondant au nom */
             }
             i++;
         }
-    } else if(function == 2) {
+
+    } else if (function == 2) { /* Cas spécial de ROTR et SRL */
         rBit = instruction & INS_R_MASK;
-        if(rBit) {
-            printf("ROTR\n");
-            exec_rotr(instruction);
-        } else {
-            printf("SRR\n");
-            exec_srl(instruction);
+
+        if (rBit) { /* L'instruction est un ROTR. */
+            exec_rotr(instruction, interactive);
+
+        } else { /* L'instruction est un SRL. */
+            exec_srl(instruction, interactive);
         }
-    } else {
-        printf("INS_FUNCTION\n");
+
+    } else { /* Instruction étant repérée par son champ "function" (Type R) */
         found = 0;
         i = 0;
+
         while (i < INS_FUNCTION_NUMBER && !found) { /* Parcourt les noms d'instruction disponibles pour trouver une correspondance */
             if (function == functionsCode[i]) {
                 found = 1;
-                (functionsFunctions[i])(instruction); /* Exécute la fonction correspondant au nom */
+                (functionsFunctions[i])(instruction, interactive); /* Exécute la fonction correspondant au nom */
             }
+
             i++;
         }
-        if(!found) {
-            printf("INSTRUCTION NOT FOUND\n");
+
+        if (!found) {
+            printf("ERREUR : instruction inconnue.\n");
             success = 0;
         }
     }
 
-    printMemory(&DATA_MEMORY);
-    printRegisters();
     return success;
 }
 
-
-/* Execute le code 
-Retourne 1 en cas de succès, 0 si une erreur */
-int executeProgram(void) {
-    PC = 0;
+/* Execute le code contenu dans la mémoire de programme
+   Retourne 1 en cas de succès, 0 si une erreur */
+int executeProgram(int step_mode) {
     int32_t instruction = readMemory(&PROG_MEMORY, PC);
     int success;
+    char temp;
 
-    printMemory(&PROG_MEMORY);
-    printf("Début de l'exécution\n");
-    while (readMemory(&PROG_MEMORY, PC) != 0xffffffff) {
-        instruction = readMemory(&PROG_MEMORY, PC); /* Lecture de l'instruction */
-        success = executeLine(instruction);
-        PC += 4;
+    PC = 0; /* Il faut remettre le PC à 0 avant l'exécution*/
+
+    if (step_mode) {
+        printf("Appuyez sur entrée pour continuer\n");
+        scanf("%c", &temp);
     }
-    printf("== FIN ==\n");
+
+    while (readMemory(&PROG_MEMORY, PC) != NO_INS) {
+        instruction = readMemory(&PROG_MEMORY, PC); /* Lecture de l'instruction */
+        if (step_mode) printf("Code hexadécimal : %x\n", instruction);
+        
+        success = executeLine(instruction, 0);
+        PC += 4;
+
+        if (step_mode) {
+            printStatus();
+            printf("Appuyez sur entrée pour continuer\n");
+            scanf("%c", &temp);
+        }
+    }
+
+    if(!step_mode) printStatus();
     return success;
 }
-
 
 /* Convertit une ligne assembleur en hexadécimal et l'écrit dans la chaîne hex
    Retourne 1 si l'instruction existe, 0 sinon */
@@ -327,5 +350,5 @@ int32_t MIPStoHex(char *ins, int n) {
         j++;
     }
 
-    return lengths[0] != 0 ? mapInstruction(ins, indexes, lengths) : 0xffffffff;
+    return lengths[0] != 0 ? mapInstruction(ins, indexes, lengths) : NO_INS;
 }

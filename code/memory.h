@@ -16,4 +16,4 @@ int8_t readByte(memSlot **mem, uint32_t address);
 int32_t readMemory(memSlot **mem, uint32_t address);
 void writeByte(memSlot **mem, uint32_t address, int8_t value);
 void writeMemory(memSlot **mem, uint32_t address, int32_t value);
-void printMemory(memSlot **mem);
+void printMemory(memSlot **mem, int isDataMemory);

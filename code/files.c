@@ -44,7 +44,7 @@ void writeLine(FILE *resultFile, int32_t resultLine) {
 	int i;
 	char hex[SIZE];
 	
-	sprintf(hex, "%.8x", resultLine);
+	sprintf(hex, "%08x", resultLine);
 	
 	for(i = 0; i < SIZE; i++) {
     	if (i % 4 == 0 && i != 0) fputc(' ', resultFile);

@@ -4,13 +4,6 @@
 #include "registers.h"
 #include "memory.h"
 
-#define ADRESS_ALIGNEMENT_MASK 0xfffffffc
-#define LOWER_64_MASK 0xffffffff
-
-/* EXCEPTIONS A GERER (Trap) */
-/* REGISTRES SPECIAUX A IMPLEMENTER : PC HI LO */
-/* GERER LA DIVISION PAR 0 */
-
 int translate_add(int arg1, int arg2, int arg3) {
     int8_t rs = arg2,
            rt = arg3,

@@ -47,14 +47,15 @@ int writeRegister(int8_t index, int32_t value) {
 
 /* Affiche la valeur de tous les registres */
 void printRegisters(void) {
-	int i, j, columns = 4, columnSize = (REGISTERS_NUMBERS/columns);
-	printf("======================= REGISTRES ========================\n");
-	for(i = 0 ; i < columnSize ; i++) {
-		printf(" ");
-		for(j = 0 ; j < columns ; j++) {
-			printf("R[%02d] : %d \t", i + j*columnSize, REGISTERS[i + j*columnSize]);
-		}
-		printf("\n");
+	int i;
+
+	printf("==================================== REGISTRES =====================================\n");
+	printf(" PC    : %8X      HI    : %8X      LO    : %8X", PC, HI, LO);
+
+	for(i = 0 ; i < REGISTERS_NUMBERS ; i++) {
+		if (!(i % 4)) printf("\n ");
+
+		printf("R[%02d] : %8X      ", i, REGISTERS[i]);
 	}
-	printf("==========================================================\n");
+	printf("\n====================================================================================\n");
 }
