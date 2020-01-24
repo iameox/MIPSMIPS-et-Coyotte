@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
         	
         }
 
-    } else { /* Cas où un fichier source est fourci */
+    } else { /* Cas où un fichier source est fourni */
         if (resultName == NULL) {
             printf("Nom du fichier résultat non trouvé : mis dans \"../tests/out.s\" par défaut\n");
             resultName = "tests/out/out.s";
